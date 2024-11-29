@@ -27,7 +27,7 @@ fi
 # Function that checks for the presence of a package in the system and, if it is missing, performs the installation
 command_check() {
     if ! command -v "$1" &>/dev/null; then
-        echo -e "---------- $2 could not be found! Installing... ----------\n"
+        echo -e "\n---------- $2 could not be found! Installing... ----------\n"
         apt install -y "$3"
         echo -e "\nInstall ok!\n"
     fi
@@ -86,7 +86,10 @@ while true; do
     case $cs in
         [Cc]*)
             echo -e "\nChange password for $SUDO_USER\n"
+            # Request user password
             read -r -p "New password: " -s password_new
+
+            # Change password and add to group sudo and add bash
             usermod -p "$(openssl passwd -1 "$password_new")" "$SUDO_USER"
             usermod -s /bin/bash -aG sudo $SUDO_USER
             echo -e "\nDONE\n"
