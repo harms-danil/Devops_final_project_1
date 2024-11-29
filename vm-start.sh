@@ -221,14 +221,16 @@ while true; do
             echo -e "DONE\n"
             break
             ;;
+
         [Nn]*)
             echo -e "\n"
             exit
             ;;
+
         *) echo -e "\nPlease answer Y or N!\n" ;;
     esac
 done
-
+#dsrs
 echo -e "\nSetting for VM is OK!!!\n"
 exit 0
 
