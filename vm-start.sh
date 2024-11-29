@@ -235,4 +235,3 @@ echo -e "\nSetting for VM is OK!!!\n"
 exit 0
 
 
-
