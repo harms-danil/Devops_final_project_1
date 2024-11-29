@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -x
+set -e
 
 # Vars
 file_ssh_keys="/root/.ssh/authorized_keys"
@@ -82,12 +82,13 @@ fi
 # Create or change password
 echo -e "\n---------- Create or change password ----------\n"
 while true; do
-    read -r -n -p "Continue or Skip (c|s) " cs
+    read -r -p "Continue or Skip (c|s) " cs
     case $cs in
         [Cc]*)
-            echo -e "\nChange password for $username\n"
-            usermod -p "$(openssl passwd -1 "$password")" "$username"
-            usermod -s /bin/bash -aG sudo
+            echo -e "\nChange password for $SUDO_USER\n"
+            read -r -p "New password: " -s password_new
+            usermod -p "$(openssl passwd -1 "$password_new")" "$SUDO_USER"
+            usermod -s /bin/bash -aG sudo $SUDO_USER
             echo -e "\nDONE\n"
             break
             ;;
@@ -104,7 +105,7 @@ done
 # Create new user
 echo -e "\n---------- New user config ----------\n"
 while true; do
-    read -r -n 1 -p "Continue or Skip? (c|s) " cs
+    read -r -p "Continue or Skip? (c|s) " cs
     case $cs in
         [Cc]*)
             # Request user name use function user_check()
@@ -115,7 +116,7 @@ while true; do
 
             # Create new user and copy ssh-keys, if user not exist
             echo -e "\nCreate new user $username \n"
-            useradd -p "$(openssl passwd -1 "$password")" "username" -s /bin/bash -m -G sudo
+            useradd -p "$(openssl passwd -1 "$password")" "$username" -s /bin/bash -m -G sudo
             cp -r /root/.ssh/ /home/"$username"/ && chown -R "$username":"$username" /home/"$username"/.ssh/
             echo -e "\nDONE\n"
             break
@@ -134,7 +135,7 @@ done
 echo -e "\n---------- Edit sshd_config file ----------\n"
 
 while true; do
-    read -r -n 1 -p "Continue or Skip? (c|s) " cs
+    read -r -p "Continue or Skip? (c|s) " cs
     case $cs in
         [Cc]*)
             sed -i "s/#\?\(Port\s*\).*$/\1 ${port}/" $file_ssh
@@ -159,7 +160,7 @@ done
 echo -e "\n---------- Disabling ipv6 ----------\n"
 
 while true; do
-    read -r -n 1 -p "Continue or Skip? (c|s) " cs
+    read -r -p "Continue or Skip? (c|s) " cs
     case $cs in
         [Cc]*)
             echo -e "\n\n"
@@ -180,7 +181,7 @@ done
 # Setting iptables
 echo -e "\n---------- Iptables config ----------\n"
 while true; do
-    read -r -n 1 -p "Current ssh session may drop! To continue you have to relogin to this host via 1870 ssh-port and run this script again. Are you ready? (y|n) " yn
+    read -r -p "Current ssh session may drop! To continue you have to relogin to this host via $port ssh-port and run this script again. Are you ready? (y|n) " yn
     case $yn in
         [Yy]*) 
             # DNS
@@ -202,7 +203,7 @@ while true; do
             iptables_add INPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
             iptables_add OUTPUT -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
             # INVALID
-            iptables_add OUTPUT -m conntrack--ctstate INVALID -j DROP
+            iptables_add OUTPUT -m conntrack --ctstate INVALID -j DROP
             iptables_add INPUT -m conntrack --ctstate INVALID -j DROP
             # Defaul DROP
             iptables -P OUTPUT DROP
