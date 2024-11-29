@@ -230,7 +230,7 @@ while true; do
         *) echo -e "\nPlease answer Y or N!\n" ;;
     esac
 done
-#dsrs
+
 echo -e "\nSetting for VM is OK!!!\n"
 exit 0
 
