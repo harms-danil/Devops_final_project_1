@@ -173,10 +173,12 @@ while true; do
             echo -e "\nDONE\n"
             break
             ;;
+
         [Ss]*)
             echo -e "\n"
             break
             ;;
+
         *) echo -e "\nPlease answer C or S!\n" ;;
     esac
 done
