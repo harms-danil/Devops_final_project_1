@@ -27,7 +27,7 @@ if [ ! -d /usr/share/easy-rsa/ ]; then
   echo -e "\n====================\nEasy-rsa could not be found\nInstalling...\n====================\n"
   systemctl restart systemd-timesyncd.service
   wget -P ~/ https://github.com/harms-danil/Devops_final_project_1/raw/refs/heads/main/deb/easy-rsa-harms_0.2_all.deb
-  dpkg -i easy-rsa-harms_0.1-1_all.deb
+  dpkg -i easy-rsa-harms_0.2_all.deb
   echo -e "\nDONE\n"
 else
   while true; do
@@ -36,7 +36,7 @@ else
     [Yy]*)
       apt purge -y easy-rsa
       wget -P ~/ https://github.com/harms-danil/Devops_final_project_1/raw/refs/heads/main/deb/easy-rsa-harms_0.2_all.deb
-      dpkg -i easy-rsa-harms_0.1-1_all.deb
+      dpkg -i easy-rsa-harms_0.2_all.deb
       echo -e "\nDONE\n"
       break
       ;;
