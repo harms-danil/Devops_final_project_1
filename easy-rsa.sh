@@ -2,6 +2,9 @@
 
 set -e
 
+# Vars
+deb_name="easy-rsa-harms_0.2_all.deb"
+
 # Check if the script is running from the root user
 if [[ "${UID}" -ne 0 ]]; then
   echo "You need to run this script as root!"
@@ -26,8 +29,8 @@ done
 if [ ! -d /usr/share/easy-rsa/ ]; then
   echo -e "\n====================\nEasy-rsa could not be found\nInstalling...\n====================\n"
   systemctl restart systemd-timesyncd.service
-  wget -P $dest_dir/ https://github.com/harms-danil/Devops_final_project_1/raw/refs/heads/main/deb/easy-rsa-harms_0.2_all.deb
-  dpkg -i easy-rsa-harms_0.2_all.deb
+  wget -P $dest_dir/ https://github.com/harms-danil/Devops_final_project_1/raw/refs/heads/main/deb/"$deb_name"
+  dpkg -i "$deb_name"
   echo -e "\nDONE\n"
 else
   while true; do
@@ -35,8 +38,8 @@ else
     case $yn in
     [Yy]*)
       apt purge -y easy-rsa-harms
-      wget -P $dest_dir/ https://github.com/harms-danil/Devops_final_project_1/raw/refs/heads/main/deb/easy-rsa-harms_0.2_all.deb
-      dpkg -i easy-rsa-harms_0.2_all.deb
+      wget -P $dest_dir/ https://github.com/harms-danil/Devops_final_project_1/raw/refs/heads/main/deb/"$deb_name"
+      dpkg -i "$deb_name"
       echo -e "\nDONE\n"
       break
       ;;
@@ -80,5 +83,9 @@ while true; do
   esac
 done
 
-echo -e "\nOK\n"
+# Delete deb-package
+rm "$dest_dir"/easy-rsa-harms*
+echo -e "\nDeb-package remove\n"
+
+echo -e "\nOK, CA installed\n"
 exit 0
