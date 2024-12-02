@@ -9,6 +9,7 @@ file_grub="/etc/default/grub"
 port="1985"
 export DEBEMAIL="harmsss@yandex.ru"
 export DEBFULLNAME="Harms"
+source ~/.bashrc
 
 # Check if the script is running from the root user
 if [[ "${UID}" -ne 0 ]]; then
