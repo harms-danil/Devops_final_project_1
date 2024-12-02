@@ -173,10 +173,12 @@ while true; do
             echo -e "\nDONE\n"
             break
             ;;
+
         [Ss]*)
             echo -e "\n"
             break
             ;;
+
         *) echo -e "\nPlease answer C or S!\n" ;;
     esac
 done
@@ -219,16 +221,17 @@ while true; do
             echo -e "DONE\n"
             break
             ;;
+
         [Nn]*)
             echo -e "\n"
             exit
             ;;
+
         *) echo -e "\nPlease answer Y or N!\n" ;;
     esac
 done
 
 echo -e "\nSetting for VM is OK!!!\n"
 exit 0
-
 
 
