@@ -7,6 +7,8 @@ file_ssh_keys="/root/.ssh/authorized_keys"
 file_ssh="/etc/ssh/sshd_config"
 file_grub="/etc/default/grub"
 port="1985"
+export DEBEMAIL="harmsss@yandex.ru"
+export DEBFULLNAME="Harms"
 
 # Check if the script is running from the root user
 if [[ "${UID}" -ne 0 ]]; then

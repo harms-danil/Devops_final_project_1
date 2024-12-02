@@ -51,7 +51,11 @@ fi
 while true; do
   read -r -p $'\n'"Easy-rsa owner username: " username
   if id "$username" >/dev/null 2>&1; then
-    mkdir "$dest_dir"/easy-rsa
+    if [ ! -d "$dest_dir"/easy-rsa/ ]; then
+      mkdir "$dest_dir"/easy-rsa
+    else
+      break
+    fi
     ln -s /usr/share/easy-rsa/* "$dest_dir"/easy-rsa/
     chmod -R 700 "$dest_dir"/easy-rsa/
     chown -R "$username":"$username" "$dest_dir"/easy-rsa/
