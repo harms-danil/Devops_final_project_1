@@ -57,8 +57,8 @@ while true; do
       break
     fi
     ln -s /usr/share/easy-rsa/* "$dest_dir"/easy-rsa/
-    chmod -R 700 "$dest_dir"/easy-rsa/
-    chown -R "$username":"$username" "$dest_dir"/easy-rsa/
+    chmod -R 700 /usr/share/easy-rsa/
+    chown -R "$username":"$username" /usr/share/easy-rsa/
     break
   else
     echo -e "\nUser $username doesn't exists!\n"
