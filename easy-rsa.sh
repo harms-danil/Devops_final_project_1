@@ -37,6 +37,7 @@ else
     read -r -n 1 -p $'\n'"Are you ready to reinstall easy-rsa? (y|n) " yn
     case $yn in
     [Yy]*)
+      apt purge -y easy-rsa
       apt purge -y easy-rsa-harms
       wget -P $dest_dir/ https://github.com/harms-danil/Devops_final_project_1/raw/refs/heads/main/deb/"$deb_name"
       dpkg -i "$deb_name"
