@@ -30,8 +30,8 @@ echo -e "\nDONE\n"
 
 # Copy server certificate and key
 echo -e "\n====================\nCopy '$server_name'.crt\n====================\n"
-scp -P $port "$dest_dir"/easy-rsa/pki/issued/openvpn.harms-devops.ru.crt "$server_path":~/keys
+scp -P $port "$dest_dir"/easy-rsa/pki/issued/"$server_name".crt "$server_path":~/keys
 echo -e "\n====================\nCopy '$server_name'.key\n====================\n"
-scp -P $port "$dest_dir"/easy-rsa/pki/private/openvpn.harms-devops.ru.key "$server_path":~/keys
+scp -P $port "$dest_dir"/easy-rsa/pki/private/"$server_name".key "$server_path":~/keys
 echo -e "\nDONE\n"
 
