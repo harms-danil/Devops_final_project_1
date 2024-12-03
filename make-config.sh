@@ -17,4 +17,4 @@ cat ${BASE_CONFIG} \
     <(echo -e '</tls-crypt>') \
 > ${OUTPUT_DIR}/${1}.ovpn
 
-echo -e "\nClient config create: ${OUTPUT_DIR}${1}.ovpn\n"
+echo -e "\nClient config create: ${OUTPUT_DIR}/${1}.ovpn\n"
