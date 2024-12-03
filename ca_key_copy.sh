@@ -46,7 +46,7 @@ while true; do
     read -r -n 1 -p "Continue or Skip (c|s) " cs
     case $cs in
         [Cc]*)
-            read -r -e -p "Enter the name of the server for which the certificate was issued: " server_name
+            read -r -e -p "\nEnter the name of the server for which the certificate was issued: " server_name
             echo -e "\n====================\nCopy '$server_name'.crt\n====================\n"
             scp -P $port "$dest_dir"/easy-rsa/pki/issued/"$server_name".crt "$server_path":~/keys
             echo -e "\n====================\nCopy '$server_name'.key\n====================\n"
@@ -68,10 +68,10 @@ while true; do
     read -r -n 1 -p "Continue or Skip (c|s) " cs
     case $cs in
         [Cc]*)
-            read -r -e -p "Enter the name of the server for which the certificate was issued: " client_name
-            echo -e "\n====================\nCopy '$server_name'.crt\n====================\n"
+            read -r -e -p "\nEnter the name of the server for which the certificate was issued: " client_name
+            echo -e "\n====================\nCopy $client_name.crt\n====================\n"
             scp -P $port "$dest_dir"/easy-rsa/pki/issued/"$client_name".crt "$server_path":~/keys
-            echo -e "\n====================\nCopy '$server_name'.key\n====================\n"
+            echo -e "\n====================\nCopy $client_name.key\n====================\n"
             scp -P $port "$dest_dir"/easy-rsa/pki/private/"$client_name".key "$server_path":~/keys
             echo -e "\nDONE\n"
             break
