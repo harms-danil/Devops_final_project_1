@@ -16,3 +16,5 @@ cat ${BASE_CONFIG} \
     ${KEY_DIR}/ta.key \
     <(echo -e '</tls-crypt>') \
 > ${OUTPUT_DIR}/${1}.ovpn
+
+echo -e "\nClient config create: ${OUTPUT_DIR}${1}.ovpn\n"
