@@ -204,7 +204,9 @@ while true; do
             iptables_add OUTPUT -o lo -j ACCEPT
             iptables_add INPUT -i lo -j ACCEPT
             # INPUT SSH
-            iptables_add INPUT -p tcp --dport $port -j ACCEPT -m comment --comment ssh
+            iptables_add INPUT -p tcp --dport $port -j ACCEPT -m comment --comment ssh_input
+            iptables_add OUTPUT -p tcp --dport $port -j ACCEPT -m comment --comment ssh_output
+
             # OUTPUT HTTP 
             iptables_add OUTPUT -p tcp -m multiport --dports 443,80 -j ACCEPT
             # ESTABLISHED
