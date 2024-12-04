@@ -224,17 +224,42 @@ while true; do
 
         # Run the script to generate the client configuration file
         if /etc/openvpn/clients_conf/make-config.sh "$client_name"; then
-            echo -e "\nDONE!\n\nCheck file /etc/openvpn/clients_conf/${client_name}.ovpn"
+            echo -e "\nDONE!\n\nCheck file /etc/openvpn/clients_conf/files/${client_name}.ovpn"
         fi
         break
         ;;
-
   [Ss]*)
     echo -e "\n"
     break
     ;;
   *) echo -e "\nPlease answer C or S!\n" ;;
   esac
+done
+
+# Request copy client config file
+echo -e "\n====================\nCopy client config file to directory /home/$SUDO_USER/client_config\n===================="
+
+while true; do
+    read -r -n 1 -p "Copy or No? (c|n) " cn
+    case $cn in
+    [Cc]*)
+        if [ ! -d /home/$SUDO_USER/client_config ]; then
+            echo -e "\nDirectory /home/$SUDO_USER/client_config not found!\nCreate\n"
+            cd /home/$SUDO_USER
+            mkdir client_config
+            echo -e "\nDone\n"
+        fi
+        echo -e "Copy client config file to directory /home/$SUDO_USER/client_config"
+        cp /etc/openvpn/client_conf/files/${client_name}.ovpn /home/$SUDO_USER/client_config/
+        echo -e "\nDONE, file $client_name.ovpn copied"
+        break
+        ;;
+    [Nn]*)
+        echo -e "\n"
+        break
+        ;;
+    *) echo -e "\nPlease answer C or S!\n" ;;
+    esac
 done
 
 # Delete deb-package
