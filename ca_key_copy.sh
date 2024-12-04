@@ -4,6 +4,7 @@ set -e
 
 # Vars
 port=1985
+host="harms-devops.ru"
 dest_dir="/home/harms"
 
 # Request the path of the future location of the easy-rsa working directory
@@ -21,7 +22,9 @@ dest_dir="/home/harms"
 #done
 
 # Request the server part where to copy the keys and certificate
-read -r -e -p "Enter the server path (format: username@hostname(ip-address)): " server_path
+read -r -e -p "Enter the server path (format: username@hostname(ip-address)): " sub_name
+server_path="harms@$sub_name.harms-devops.ru"
+echo -e "\n$server_path\n"
 
 # Copy ca.srt
 echo -e "\n====================\nCopy ca.crt\n====================\n"
@@ -48,10 +51,10 @@ while true; do
     case $cs in
         [Cc]*)
             read -r -e -p "\nEnter the name of the server for which the certificate was issued: " server_name
-            echo -e "\n====================\nCopy '$server_name'.crt\n====================\n"
-            scp -P $port "$dest_dir"/easy-rsa/pki/issued/"$server_name".crt "$server_path":~/keys
-            echo -e "\n====================\nCopy '$server_name'.key\n====================\n"
-            scp -P $port "$dest_dir"/easy-rsa/pki/private/"$server_name".key "$server_path":~/keys
+            echo -e "\n====================\nCopy $server_name.$host.crt\n====================\n"
+            scp -P $port "$dest_dir"/easy-rsa/pki/issued/"$server_name"."$host".crt "$server_path":~/keys
+            echo -e "\n====================\nCopy $server_name.$host.key\n====================\n"
+            scp -P $port "$dest_dir"/easy-rsa/pki/private/"$server_name"."$host".key "$server_path":~/keys
             echo -e "\nDONE\n"
             break
             ;;
