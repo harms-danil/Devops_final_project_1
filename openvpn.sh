@@ -135,7 +135,7 @@ while true; do
 
         # Request to enter the port through which openvpn will work
         while true; do
-            read -r -n 4 -p $'\n\n'"OpenVPN port number (default 1194): " port
+            read -r -p $'\n\n'"OpenVPN port number (default 1194): " port
             re='^[0-9]+$'
             if ! [[ $port =~ $re ]]; then
                 echo "error: Not a number" >&2
@@ -157,8 +157,9 @@ while true; do
         echo -e "\n"
 
         # Request hostname or ip openvpn server and put it in the configuration file
-        read -r -p $'\n'"The hostname or IP of the server: " host
-        sed -r -i 's/(^remote\s).*$/\1'"$host"' '"$port"'/' /etc/openvpn/clients_config/confiles/base.conf
+        read -r -p $'\n'"The hostname or IP of the server: " sub_host
+        sed -r -i 's/(^remote\s).*$/\1'"$sub_host.harms-devops.ru"' '"$port"'/' /etc/openvpn/clients_conf/files/base
+        .conf
 
         echo -e "\n====================\nIptables configuration\n====================\n"
 
@@ -174,7 +175,8 @@ while true; do
 
         # Config iptables
         # OpenVPN
-        iptables_add INPUT -i "$eth" -m conntrack --ctstate NEW -p "$proto" --dport "$port" -j ACCEPT -m comment --comment openvpn
+        iptables_add INPUT -i "$eth" -m conntrack --ctstate NEW -p udp --dport "$port" -j ACCEPT -m comment --comment
+        openvpn
         # Allow TUN interfaces connections to OpenVPN server
         iptables_add INPUT -i tun+ -j ACCEPT -m comment --comment openvpn
         # Allow TUN interfaces connections to be forwarded through interfaces
