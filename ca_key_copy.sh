@@ -47,7 +47,7 @@ done
 # Copy server certificate and key
 echo -e "\n====================\nCopy server certificate and key\n====================\n"
 while true; do
-    read -r -n 1 -p "Continue or Skip (c|s) " cs
+    read -r -n 1 -p "Continue or Skip (c|s) \n" cs
     case $cs in
         [Cc]*)
             read -r -e -p "\nEnter the name of the server for which the certificate was issued: " server_name
@@ -69,7 +69,7 @@ done
 # Copy client certificate and key
 echo -e "\n====================\nCopy client certificate and key\n====================\n"
 while true; do
-    read -r -n 1 -p "Continue or Skip (c|s) " cs
+    read -r -n 1 -p "Continue or Skip (c|s) \n" cs
     case $cs in
         [Cc]*)
             read -r -e -p "\nEnter the name of the server for which the certificate was issued: " client_name
