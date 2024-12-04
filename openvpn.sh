@@ -158,8 +158,7 @@ while true; do
 
         # Request hostname or ip openvpn server and put it in the configuration file
         read -r -p $'\n'"The hostname or IP of the server: " sub_host
-        sed -r -i 's/(^remote\s).*$/\1'"$sub_host.harms-devops.ru"' '"$port"'/' /etc/openvpn/clients_conf/files/base
-        .conf
+        sed -r -i 's/(^remote\s).*$/\1'"$sub_host.harms-devops.ru"' '"$port"'/' /etc/openvpn/clients_conf/files/base.conf
 
         echo -e "\n====================\nIptables configuration\n====================\n"
 
@@ -175,8 +174,7 @@ while true; do
 
         # Config iptables
         # OpenVPN
-        iptables_add INPUT -i "$eth" -m conntrack --ctstate NEW -p udp --dport "$port" -j ACCEPT -m comment --comment
-         openvpn
+        iptables_add INPUT -i "$eth" -m conntrack --ctstate NEW -p udp --dport "$port" -j ACCEPT -m comment --comment openvpn
         # Allow TUN interfaces connections to OpenVPN server
         iptables_add INPUT -i tun+ -j ACCEPT -m comment --comment openvpn
         # Allow TUN interfaces connections to be forwarded through interfaces
