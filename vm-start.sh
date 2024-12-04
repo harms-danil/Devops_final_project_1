@@ -230,10 +230,10 @@ while true; do
 done
 
 # Create keys directory
-if [ ! -d /home/$username/keys ]; then
-    echo -e "\n====================\nDirectory /home/$username/keys not found!\nCreate... \n====================\n"
+if [ ! -d /home/$SUDO_USER/keys ]; then
+    echo -e "\n====================\nDirectory /home/$SUDO_USER/keys not found!\nCreate... \n====================\n"
     mkdir keys
-    chown $username:$username /home/$username/keys
+    chown $SUDO_USER:$SUDO_USER /home/$SUDO_USER/keys
     exit 0
 else
     echo -e "\n====================\nDirectory /home/$username/keys found! \n====================\n"
