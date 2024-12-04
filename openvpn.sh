@@ -76,7 +76,7 @@ else
             break
             ;;
         [Nn]*)
-            exit
+            break
             ;;
         *) echo -e "\nPlease answer Y or N!\n" ;;
     esac
