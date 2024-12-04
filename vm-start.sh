@@ -223,7 +223,7 @@ while true; do
             ;;
         [Nn]*)
             echo -e "\n"
-            exit
+            break
             ;;
         *) echo -e "\nPlease answer Y or N!\n" ;;
     esac
@@ -234,6 +234,7 @@ if [ ! -d /home/$SUDO_USER/keys ]; then
     echo -e "\n====================\nDirectory /home/$SUDO_USER/keys not found!\nCreate... \n====================\n"
     mkdir keys
     chown $SUDO_USER:$SUDO_USER /home/$SUDO_USER/keys
+    echo -e "\nDONE\n"
     exit 0
 else
     echo -e "\n====================\nDirectory /home/$SUDO_USER/keys found! \n====================\n"
