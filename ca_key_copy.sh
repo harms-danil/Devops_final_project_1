@@ -72,7 +72,7 @@ while true; do
     read -r -n 1 -p "Continue or Skip (c|s) \n" cs
     case $cs in
         [Cc]*)
-            read -r -e -p "\nEnter the name of the server for which the certificate was issued: " client_name
+            read -r -e -p "\nEnter the name of the client for which the certificate was issued: " client_name
             echo -e "\n====================\nCopy $client_name.crt\n====================\n"
             scp -P $port "$dest_dir"/easy-rsa/pki/issued/"$client_name".crt "$server_path":~/keys
             echo -e "\n====================\nCopy $client_name.key\n====================\n"

@@ -70,6 +70,8 @@ else
             systemctl disable openvpn-server@server.service
             apt purge -y openvpn
             apt purge -y openvpn-harms
+            rm -rf /etc/openvpn
+            rm -rf /var/log/openvpn
             wget -P $dest_dir/ https://github.com/harms-danil/Devops_final_project_1/raw/refs/heads/main/deb/"$deb_name"
             dpkg -i "$deb_name"
             echo -e "\nDONE\n"
