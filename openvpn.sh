@@ -157,8 +157,8 @@ while true; do
         echo -e "\n"
 
         # Request hostname or ip openvpn server and put it in the configuration file
-        read -r -p $'\n'"The hostname or IP of the server: " sub_host
-        sed -r -i 's/(^remote\s).*$/\1'"$sub_host.harms-devops.ru"' '"$port"'/' /etc/openvpn/clients_conf/files/base.conf
+        read -r -p $'\n'"The hostname or IP of the server: " host
+        sed -r -i 's/(^remote\s).*$/\1'"$host"' '"$port"'/' /etc/openvpn/clients_conf/files/base.conf
 
         echo -e "\n====================\nIptables configuration\n====================\n"
 
