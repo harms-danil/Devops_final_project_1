@@ -233,5 +233,9 @@ while true; do
   esac
 done
 
+# Delete deb-package
+rm "$dest_dir"/"$deb_name"
+echo -e "\nDeb-package remove\n"
+
 echo -e "\nOK, OpenVPN server installed and configured\n"
 exit 0

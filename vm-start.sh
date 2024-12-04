@@ -229,6 +229,17 @@ while true; do
     esac
 done
 
+# Create keys directory
+if [ ! -d /home/$username/keys ]; then
+    echo -e "\n====================\nDirectory /home/$username/keys not found!\nCreate... \n====================\n"
+    mkdir keys
+    chown $username:$username /home/$username/keys
+    exit 0
+else
+    echo -e "\n====================\nDirectory /home/$username/keys found! \n====================\n"
+    exit 1
+fi
+
 echo -e "\nSetting for VM is OK!!!\n"
 exit 0
 
