@@ -176,7 +176,7 @@ while true; do
         # Config iptables
         # OpenVPN
         iptables_add INPUT -i "$eth" -m conntrack --ctstate NEW -p udp --dport "$port" -j ACCEPT -m comment --comment
-        openvpn
+         openvpn
         # Allow TUN interfaces connections to OpenVPN server
         iptables_add INPUT -i tun+ -j ACCEPT -m comment --comment openvpn
         # Allow TUN interfaces connections to be forwarded through interfaces
