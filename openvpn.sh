@@ -251,7 +251,7 @@ while true; do
         fi
         echo -e "Copy client config file to directory /home/$SUDO_USER/client_config"
         cp /etc/openvpn/clients_conf/files/${client_name}.ovpn /home/$SUDO_USER/client_config/
-        echo -e "\nDONE, file $client_name.ovpn copied"
+        echo -e "\nDONE!\n\nCheck file /home/$SUDO_USER/client_config/${client_name}.ovpn"
         break
         ;;
     [Nn]*)
