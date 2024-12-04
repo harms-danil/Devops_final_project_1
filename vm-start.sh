@@ -236,7 +236,7 @@ if [ ! -d /home/$SUDO_USER/keys ]; then
     chown $SUDO_USER:$SUDO_USER /home/$SUDO_USER/keys
     exit 0
 else
-    echo -e "\n====================\nDirectory /home/$username/keys found! \n====================\n"
+    echo -e "\n====================\nDirectory /home/$SUDO_USER/keys found! \n====================\n"
     exit 1
 fi
 
