@@ -7,7 +7,7 @@ file_ssh_keys="/root/.ssh/authorized_keys"
 file_ssh="/etc/ssh/sshd_config"
 file_grub="/etc/default/grub"
 port="1985"
-completion="\n====================\n"
+#completion="\n====================\n"
 export DEBEMAIL="harmsss@yandex.ru"
 export DEBFULLNAME="Harms"
 source ~/.bashrc
