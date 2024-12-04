@@ -3,6 +3,7 @@
 set -e
 
 # Vars
+dest_dir="/home/harms"
 deb_name="easy-rsa-harms_0.2_all.deb"
 
 # Check if the script is running from the root user
@@ -11,19 +12,20 @@ if [[ "${UID}" -ne 0 ]]; then
   exit 1
 fi
 
+# If need, uncomment
 # Request the path of the future location of the easy-rsa working directory
-while true; do
-  read -r -e -p $'\n'"Path for easy-rsa location (format: /home/username): " dest_dir
-  if [[ "$dest_dir" == */ ]]; then
-    echo -e "\nWrong path format!\n"
-  else
-    if [ ! -d "$dest_dir" ]; then
-      echo -e "\nDirectory $dest_dir doesn't exist!\n"
-    else
-      break
-    fi
-  fi
-done
+#while true; do
+#  read -r -e -p $'\n'"Path for easy-rsa location (format: /home/username): " dest_dir
+#  if [[ "$dest_dir" == */ ]]; then
+#    echo -e "\nWrong path format!\n"
+#  else
+#    if [ ! -d "$dest_dir" ]; then
+#      echo -e "\nDirectory $dest_dir doesn't exist!\n"
+#    else
+#      break
+#    fi
+#  fi
+#done
 
 # Check if the program is installed Easy-RSA
 if [ ! -d /usr/share/easy-rsa/ ]; then
