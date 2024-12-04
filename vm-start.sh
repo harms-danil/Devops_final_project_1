@@ -7,6 +7,7 @@ file_ssh_keys="/root/.ssh/authorized_keys"
 file_ssh="/etc/ssh/sshd_config"
 file_grub="/etc/default/grub"
 port="1985"
+completion="\n====================\n"
 export DEBEMAIL="harmsss@yandex.ru"
 export DEBFULLNAME="Harms"
 source ~/.bashrc
@@ -30,7 +31,7 @@ fi
 # Function that checks for the presence of a package in the system and, if it is missing, performs the installation
 command_check() {
     if ! command -v "$1" &>/dev/null; then
-        echo -e "\n---------- $2 could not be found! Installing... ----------\n"
+        echo -e "\n====================\n $2 could not be found! Installing... \n====================\n"
         apt install -y "$3"
         echo -e "\nInstall ok!\n"
     fi
@@ -56,7 +57,7 @@ iptables_add() {
 }
 
 # Setting time-zone
-echo -e "\n---------- Setting timezone ----------\n"
+echo -e "\n====================\nSetting timezone \n====================\n"
 timedatectl set-timezone Europe/Moscow
 systemctl restart systemd-timesyncd.service
 timedatectl
@@ -72,18 +73,18 @@ command_check update-ca-certificates "Ca-certificates" ca-certificates
 
 # Check file ssh
 if [ ! -f "$file_ssh" ]; then
-    echo -e "\n---------- File $file_ssh not found! ----------\n"
+    echo -e "\n====================\nFile $file_ssh not found! \n====================\n"
     exit 1
 fi
 
 # Check file grub
 if [ ! -f "$file_grub"  ]; then
-    echo -e "\n---------- File $file_grub not found! ----------\n"
+    echo -e "\n====================\nFile $file_grub not found! \n====================\n"
     exit 1
 fi
 
 # Create or change password
-echo -e "\n---------- Create or change password ----------\n"
+echo -e "\n====================\nCreate or change password \n====================\n"
 while true; do
     read -r -p "Continue or Skip (c|s) " cs
     case $cs in
@@ -98,18 +99,16 @@ while true; do
             echo -e "\nDONE\n"
             break
             ;;
-
         [Ss]*)
             echo -e "\n"
             break
             ;;
-
         *) echo -e "\nPlease answer C or S!\n" ;;
     esac
 done
 
 # Create new user
-echo -e "\n---------- New user config ----------\n"
+echo -e "\n====================\nNew user config \n====================\n"
 while true; do
     read -r -p "Continue or Skip? (c|s) " cs
     case $cs in
@@ -127,18 +126,16 @@ while true; do
             echo -e "\nDONE\n"
             break
             ;;
-
         [Ss]*)
             echo -e "\n"
             break
             ;;
         *) echo -e "\nPlease answer C or S!\n" ;;
-    
     esac
 done
 
 # Setting sshd_config
-echo -e "\n---------- Edit sshd_config file ----------\n"
+echo -e "\n====================\nEdit sshd_config file \n====================\n"
 
 while true; do
     read -r -p "Continue or Skip? (c|s) " cs
@@ -163,7 +160,7 @@ while true; do
 done
 
 # Disable ipv6
-echo -e "\n---------- Disabling ipv6 ----------\n"
+echo -e "\n====================\nDisabling ipv6 \n====================\n"
 
 while true; do
     read -r -p "Continue or Skip? (c|s) " cs
@@ -176,18 +173,16 @@ while true; do
             echo -e "\nDONE\n"
             break
             ;;
-
         [Ss]*)
             echo -e "\n"
             break
             ;;
-
         *) echo -e "\nPlease answer C or S!\n" ;;
     esac
 done
 
 # Setting iptables
-echo -e "\n---------- Iptables config ----------\n"
+echo -e "\n====================\nIptables config \n====================\n"
 while true; do
     read -r -p "Current ssh session may drop! To continue you have to relogin to this host via $port ssh-port and run this script again. Are you ready? (y|n) " yn
     case $yn in
@@ -220,17 +215,15 @@ while true; do
             iptables -P FORWARD DROP
 
             # save iptables config
-            echo -e "\n---------- Saving iptables config ----------\n"
+            echo -e "\n====================\nSaving iptables config \n====================\n"
             service netfilter-persistent save
             echo -e "DONE\n"
             break
             ;;
-
         [Nn]*)
             echo -e "\n"
             exit
             ;;
-
         *) echo -e "\nPlease answer Y or N!\n" ;;
     esac
 done
