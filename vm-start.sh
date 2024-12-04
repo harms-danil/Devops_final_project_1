@@ -198,7 +198,7 @@ while true; do
             # Loopback
             iptables_add OUTPUT -o lo -j ACCEPT
             iptables_add INPUT -i lo -j ACCEPT
-            # INPUT SSH
+            # INPUT and OUTPUT SSH
             iptables_add INPUT -p tcp --dport $port -j ACCEPT -m comment --comment ssh_input
             iptables_add OUTPUT -p tcp --dport $port -j ACCEPT -m comment --comment ssh_output
             # OUTPUT HTTP 
