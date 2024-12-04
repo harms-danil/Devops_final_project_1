@@ -191,6 +191,10 @@ while true; do
         echo -e "\n====================\nRestarting Open-VPN service...\n====================\n"
         systemctl restart openvpn-server@server.service
         systemctl enable openvpn-server@server.service
+
+        echo -e "\n====================\nEnter password fo ca server certificate \n====================\n"
+        systemd-tty-ask-password-agent
+
         echo -e "\nDONE\n"
         break
         ;;
@@ -212,14 +216,14 @@ while true; do
         read -r -p $'\n'"Client name: " client_name
         # Request a client certificate and transfer it to the working directory of the program
         client_crt=$(path_request "client certificate")
-        cp "$client_crt" /etc/openvpn/clients_conf/keys/$client_name.crt
+        cp "$client_crt" /etc/openvpn/clients_conf/keys/
 
         # Request a client key and transfer it to the working directory of the program
         client_key=$(path_request "client key")
-        cp "$client_key" /etc/openvpn/clients_conf/keys/$client_name.key
+        cp "$client_key" /etc/openvpn/clients_conf/keys/
 
         # Run the script to generate the client configuration file
-        if /etc/openvpn/clients_conf/make_config.sh "$client_name"; then
+        if /etc/openvpn/clients_conf/make-config.sh "$client_name"; then
             echo -e "\nDONE!\n\nCheck file /etc/openvpn/clients_conf/${client_name}.ovpn"
         fi
         break
