@@ -80,10 +80,10 @@ done
 # Copy server certificate and key
 echo -e "\n====================\nCopy server certificate and key\n====================\n"
 while true; do
-    read -r -n 1 -p $'\n'"Continue or Skip (c|s) \n" cs
+    read -r -n 1 -p $'\n'"Continue or Skip (c|s) " cs
     case $cs in
         [Cc]*)
-            read -r -e -p $'\n'"\nEnter the name of the server for which the certificate was issued: " server_name
+            read -r -e -p $'\n'"Enter the name of the server for which the certificate was issued: " server_name
             echo -e "\n====================\nCopy $server_name.$host.crt\n====================\n"
             scp -P $port "$dest_dir"/easy-rsa/pki/issued/"$server_name"."$host".crt "$server_path":~/keys
             echo -e "\n====================\nCopy $server_name.$host.key\n====================\n"
