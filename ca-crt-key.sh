@@ -33,9 +33,19 @@ while true; do
     read -r -n 1 -p "Continue or Skip (c|s) " cs
     case $cs in
         [Cc]*)
-            cd $dest_dir/easy-rsa
-            ./easyrsa gen-req "$sub_name"."$host" nopass
-            ./easyrsa sign-req server "$sub_name"."$host"
+            if [ ! -f "$dest_dir"/easy-rsa/pki/private/"$sub_name"."$host".key ]; then
+                cd $dest_dir/easy-rsa
+                ./easyrsa gen-req "$sub_name"."$host" nopass
+                if [ ! -f $dest_dir/easy-rsa/pki/issued/"$sub_name"."$host".crt ]; then
+                    ./easyrsa sign-req server "$sub_name"."$host"
+                else
+                    echo -e "\nFile $dest_dir/easy-rsa/pki/issued/$sub_name.$host.crt found!\nNeed remove him...\n"
+                    exit 1
+                fi
+            else
+                echo -e "\nFile $dest_dir/easy-rsa/pki/private/$sub_name.$host.key" found!\nNeed remove him...\n
+                exit 1
+            fi
             # remove req
             rm $dest_dir/easy-rsa/pki/reqs/"$sub_name"."$host".req
             echo -e "\nDONE\n"
