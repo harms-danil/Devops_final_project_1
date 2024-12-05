@@ -43,7 +43,7 @@ while true; do
                     exit 1
                 fi
             else
-                echo -e "\nFile $dest_dir/easy-rsa/pki/private/$sub_name.$host.key" found!\nNeed remove him...\n
+                echo -e "\nFile $dest_dir/easy-rsa/pki/private/$sub_name.$host.key found!\nNeed remove him...\n"
                 exit 1
             fi
             # remove req
