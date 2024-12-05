@@ -7,6 +7,7 @@ set -e
 port=1985
 host="harms-devops.ru"
 dest_dir="/home/harms"
+username="harms"
 
 # Request the path of the future location of the easy-rsa working directory
 #while true; do
@@ -24,7 +25,9 @@ dest_dir="/home/harms"
 
 # Request the server part where to copy the keys and certificate
 read -r -e -p "Enter the SUB_name server path (format: username@SUB.hostname): " sub_name
-server_path="harms@$sub_name.$host"
+server_path_ssh="$username@$sub_name.$host"
+server_name="$sub_name.$host"
+echo -e "\n$server_name \n"
 echo -e "\n$server_path \n"
 
 # Create pair crt and key
@@ -33,21 +36,21 @@ while true; do
     read -r -n 1 -p $'\n'"Continue or Skip (c|s) " cs
     case $cs in
         [Cc]*)
-            if [ ! -f "$dest_dir"/easy-rsa/pki/private/"$sub_name"."$host".key ]; then
+            if [ ! -f "$dest_dir"/easy-rsa/pki/private/"$server_name".key ]; then
                 cd $dest_dir/easy-rsa
-                ./easyrsa gen-req "$sub_name"."$host" nopass
-                if [ ! -f $dest_dir/easy-rsa/pki/issued/"$sub_name"."$host".crt ]; then
-                    ./easyrsa sign-req server "$sub_name"."$host"
+                ./easyrsa gen-req "$server_name" nopass
+                if [ ! -f $dest_dir/easy-rsa/pki/issued/"$server_name".crt ]; then
+                    ./easyrsa sign-req server "$server_name"
                 else
-                    echo -e "\nFile $dest_dir/easy-rsa/pki/issued/$sub_name.$host.crt found!\nNeed remove him...\n"
+                    echo -e "\nFile $dest_dir/easy-rsa/pki/issued/$server_name found!\nNeed remove him...\n"
                     exit 1
                 fi
             else
-                echo -e "\nFile $dest_dir/easy-rsa/pki/private/$sub_name.$host.key found!\nNeed remove him...\n"
+                echo -e "\nFile $dest_dir/easy-rsa/pki/private/$server_name found!\nNeed remove him...\n"
                 exit 1
             fi
             # remove req
-            rm $dest_dir/easy-rsa/pki/reqs/"$sub_name"."$host".req
+            rm $dest_dir/easy-rsa/pki/reqs/"$server_name
             echo -e "\nDONE\n"
             break
             ;;
@@ -65,7 +68,7 @@ while true; do
     read -r -n 1 -p $'\n'"Continue or Skip (c|s) " cs
     case $cs in
         [Cc]*)
-            scp -P $port "$dest_dir"/easy-rsa/pki/ca.crt  "$server_path":~/keys
+            scp -P $port "$dest_dir"/easy-rsa/pki/ca.crt  "$server_path_ssh":~/keys
             echo -e "\nDONE\n"
             break
             ;;
@@ -83,11 +86,10 @@ while true; do
     read -r -n 1 -p $'\n'"Continue or Skip (c|s) " cs
     case $cs in
         [Cc]*)
-            read -r -e -p $'\n'"Enter the name of the server for which the certificate was issued: " server_name
-            echo -e "\n====================\nCopy $server_name.$host.crt\n====================\n"
-            scp -P $port "$dest_dir"/easy-rsa/pki/issued/"$server_name"."$host".crt "$server_path":~/keys
-            echo -e "\n====================\nCopy $server_name.$host.key\n====================\n"
-            scp -P $port "$dest_dir"/easy-rsa/pki/private/"$server_name"."$host".key "$server_path":~/keys
+            echo -e "\n====================\nCopy $server_name.crt\n====================\n"
+            scp -P $port "$dest_dir"/easy-rsa/pki/issued/"$server_name".crt "$server_path_ssh":~/keys
+            echo -e "\n====================\nCopy $server_name.key\n====================\n"
+            scp -P $port "$dest_dir"/easy-rsa/pki/private/"$server_name".key "$server_path_ssh":~/keys
             echo -e "\nDONE\n"
             break
             ;;
@@ -103,14 +105,14 @@ done
 # Copy client certificate and key
 echo -e "\n====================\nCopy client certificate and key\n====================\n"
 while true; do
-    read -r -n 1 -p $'\n'"Continue or Skip (c|s) \n" cs
+    read -r -n 1 -p $'\n'"Continue or Skip (c|s) " cs
     case $cs in
         [Cc]*)
             read -r -e -p $'\n'"\nEnter the name of the client for which the certificate was issued: " client_name
             echo -e "\n====================\nCopy $client_name.crt\n====================\n"
-            scp -P $port "$dest_dir"/easy-rsa/pki/issued/"$client_name".crt "$server_path":~/keys
+            scp -P $port "$dest_dir"/easy-rsa/pki/issued/"$client_name".crt "$server_path_ssh":~/keys
             echo -e "\n====================\nCopy $client_name.key\n====================\n"
-            scp -P $port "$dest_dir"/easy-rsa/pki/private/"$client_name".key "$server_path":~/keys
+            scp -P $port "$dest_dir"/easy-rsa/pki/private/"$client_name".key "$server_path_ssh":~/keys
             echo -e "\nDONE\n"
             break
             ;;
