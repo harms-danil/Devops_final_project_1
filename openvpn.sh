@@ -2,6 +2,7 @@
 
 #completion="\n====================\n"
 
+# Activate the option that interrupts script execution if any command terminates with a non-zero status
 set -e
 
 # Vars
@@ -28,7 +29,7 @@ iptables_nat_add() {
     fi
 }
 
-# функция, которая проверяет валидность пути в linux-системе
+# Function that checks the validity of a path on a linux system
 path_request() {
     while true; do
         read -r -e -p $'\n\n'"Please input valid path to ${1}: " path

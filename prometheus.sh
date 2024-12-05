@@ -1,37 +1,24 @@
 #!/bin/bash
 
-# активируем опцию, которая прерывает выполнение скрипта, если любая команда завершается с ненулевым статусом
+#completion="\n====================\n"
+
+# Activate the option that interrupts script execution if any command terminates with a non-zero status
 set -e
 
-# проверим, запущен ли скрипт от пользователя root
+# Check if the script is running from the root user
 if [[ "${UID}" -ne 0 ]]; then
   echo -e "You need to run this script as root!"
   exit 1
 fi
 
-# проверим подключен ли репозиторий
-if [[ ! $(grep -rhE ^deb /etc/apt/sources.list*) == *"deb https://repo.justnikobird.ru:1111/lab focal main"* ]]; then
-  echo -e "Lab repo not connected!\nPlease run vm_start.sh script!\n"
-  exit 1
-fi
-
-# функция, которая проверяет наличие пакета в системе и в случае его отсутствия выполняет установку
-command_check() {
-  if ! command -v "$1" &>/dev/null; then
-    echo -e "\n====================\n$2 could not be found!\nInstalling...\n====================\n"
-    apt-get install -y "$3"
-    echo -e "\nDONE\n"
-  fi
-}
-
-# функция, которая проверяет наличие правила в iptables и в случае отсутствия применяет его
+# Function that checks for the presence of a rule in iptables and, if missing, applies it
 iptables_add() {
   if ! iptables -C "$@" &>/dev/null; then
     iptables -A "$@"
   fi
 }
 
-# функция, которая проверяет валидность пути в linux-системе
+# Function that checks the validity of a path on a linux system
 path_request() {
   while true; do
     read -r -e -p $'\n'"Please input valid path to ${1}: " path
@@ -42,16 +29,7 @@ path_request() {
   done
 }
 
-# установим все необходимые пакеты используя функцию command_check
-systemctl restart systemd-timesyncd.service
-apt-get update
-command_check iptables "Iptables" iptables
-command_check netfilter-persistent "Netfilter-persistent" iptables-persistent
-command_check prometheus "Prometheus" prometheus-lab
-command_check basename "Basename" coreutils
-command_check htpasswd "Htpasswd" apache2-utils
-
-# запросим адрес приватной сети и проверим его на корректность
+# Request the address of the private network and check it for correctness
 while true; do
   read -r -p $'\n'"Privat network (format 10.0.0.0/24): " private_net
   if [[ ! $private_net =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\/[0-9]{1,2}$ ]]; then
@@ -61,20 +39,20 @@ while true; do
   fi
 done
 
-# выполним настройку iptables
-echo -e "\n====================\nIptables configuration\n====================\n"
+# Set up iptables
+echo -e "\n====================\nIptables configuration \n====================\n"
 iptables_add INPUT -p tcp --dport 9090 -j ACCEPT -m comment --comment prometheus
 iptables_add INPUT -p tcp --dport 9093 -j ACCEPT -m comment --comment prometheus_alertmanager
 iptables_add OUTPUT -p tcp --dport 587 -j ACCEPT -m comment --comment smtp
 iptables_add OUTPUT -p tcp -d "$private_net" --dport 9100 -j ACCEPT -m comment --comment prometheus_node_exporter
 iptables_add OUTPUT -p tcp -d "$private_net" --dport 9176 -j ACCEPT -m comment --comment prometheus_openvpn_exporter
 iptables_add OUTPUT -p tcp -d "$private_net" --dport 9113 -j ACCEPT -m comment --comment prometheus_nginx_exporter
-echo -e "\n====================\nSaving iptables config\n====================\n"
+echo -e "\n====================\nSaving iptables config \n====================\n"
 service netfilter-persistent save
 echo -e "\nDONE\n"
 
-# выполним настройку HTTPS
-echo -e "\n====================\nHTTPS configuration\n====================\n"
+# Set up HTTPS
+echo -e "\n====================\nHTTPS configuration \n====================\n"
 
 # запросим путь до файла сертификата, перенесем его в рабочую директорию программы и поменяем владельца
 cert_path=$(path_request certificate)
