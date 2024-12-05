@@ -23,7 +23,7 @@ dest_dir="/home/harms"
 #done
 
 # Request the server part where to copy the keys and certificate
-read -r -e -p "Enter the server path (format: username@hostname(ip-address)): " sub_name
+read -r -e -p "Enter the SUB_name server path (format: username@SUB.hostname): " sub_name
 server_path="harms@$sub_name.$host"
 echo -e "\n$server_path\n"
 
