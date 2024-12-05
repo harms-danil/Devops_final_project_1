@@ -86,9 +86,9 @@ while true; do
     read -r -n 1 -p $'\n'"Continue or Skip (c|s) " cs
     case $cs in
         [Cc]*)
-            echo -e "\n====================\nCopy $server_name.crt\n===================="
+            echo -e "\n====================\nCopy $server_name.crt\n====================\n"
             scp -P $port "$dest_dir"/easy-rsa/pki/issued/"$server_name".crt "$server_path_ssh":~/keys
-            echo -e "\n====================\nCopy $server_name.key\n===================="
+            echo -e "\n====================\nCopy $server_name.key\n====================\n"
             scp -P $port "$dest_dir"/easy-rsa/pki/private/"$server_name".key "$server_path_ssh":~/keys
             echo -e "\nDONE\n"
             break
