@@ -34,14 +34,10 @@ while true; do
     case $cs in
         [Cc]*)
             cd $dest_dir/easy-rsa
-#            cat <<-EOF | sudo ./easyrsa gen-req "$sub_name"."$host" nopass
-#            yes
-#            EOF
-#            cat <<-EOF | sudo ./easyrsa sign-req server "$sub_name"."$host"
-#            yes
-#            EOF
             ./easyrsa gen-req "$sub_name"."$host" nopass
             ./easyrsa sign-req server "$sub_name"."$host"
+            # remove req
+            rm $dest_dir/easy-rsa/pki/reqs/"$sub_name"."$host".req
             echo -e "\nDONE\n"
             break
             ;;
