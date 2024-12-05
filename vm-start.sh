@@ -71,6 +71,7 @@ command_check netfilter-persistent "Netfilter-persistent" iptables-persistent
 command_check openssl "OpenSSL" openssl
 command_check update-ca-certificates "Ca-certificates" ca-certificates
 command_check basename "Basename" coreutils
+command_check htpasswd "Htpasswd" apache2-utils
 
 # Check file ssh
 if [ ! -f "$file_ssh" ]; then
@@ -147,6 +148,9 @@ while true; do
             sed -i 's/#\?\(PubkeyAuthentication\s*\).*$/\1 yes/' $file_ssh
             sed -i 's/#\?\(PermitEmptyPasswords\s*\).*$/\1 no/' $file_ssh
             sed -i 's/#\?\(PasswordAuthentication\s*\).*$/\1 no/' $file_ssh
+            # Increasing ssh timeout time
+            sed -i 's/#\?\(ClientAliveInterval\s*\).*$/\1 3000/' $file_ssh
+            sed -i 's/#\?\(ClientAliveCountMax\s*\).*$/\1 3/' $file_ssh
             echo -e "\n\n"
             /etc/init.d/ssh restart
             echo -e "\nDONE\n"
