@@ -23,8 +23,28 @@ dest_dir="/home/harms"
 
 # Request the server part where to copy the keys and certificate
 read -r -e -p "Enter the server path (format: username@hostname(ip-address)): " sub_name
-server_path="harms@$sub_name.harms-devops.ru"
+server_path="harms@$sub_name.$host"
 echo -e "\n$server_path\n"
+
+# Create pair crt and key
+echo -e "\n====================\nCreate crt and key \n====================\n"
+while true; do
+    read -r -n 1 -p "Continue or Skip (c|s) " cs
+    case $cs in
+        [Cc]*)
+            cd $dest_dir/easy-rsa
+            ./easy-rsa gen-req "$sub_name"."$host" nopass
+            ./easy-rsa sign-req server "$sub_name"."$host"
+            echo -e "\nDONE\n"
+            break
+            ;;
+        [Ss]*)
+            echo -e "\n"
+            break
+            ;;
+        *) echo -e "\nPlease answer C or S!\n" ;;
+    esac
+done
 
 # Copy ca.srt
 echo -e "\n====================\nCopy ca.crt\n====================\n"
