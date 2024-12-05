@@ -123,3 +123,5 @@ while true; do
         *) echo -e "\nPlease answer C or S!" ;;
     esac
 done
+
+echo -e "\nDONE"
