@@ -205,8 +205,8 @@ while true; do
     case $cs in
         [Cc]*)
             echo -e "\n\n"
-            sed -i '$a DEBEMAIL=harmsss@yandex.ru' $file_bashrc
-            sed -i '$a DEBFULLNAME=Harms' $file_bashrc
+            sed -i '$a export DEBEMAIL=harmsss@yandex.ru' $file_bashrc
+            sed -i '$a export DEBFULLNAME=Harms' $file_bashrc
             source /home/$SUDO_USER/.bashrc
             echo -e "\nDONE\n"
             break
