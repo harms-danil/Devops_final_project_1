@@ -34,8 +34,8 @@ while true; do
     case $cs in
         [Cc]*)
             cd $dest_dir/easy-rsa
-            ./easy-rsa gen-req "$sub_name"."$host" nopass
-            ./easy-rsa sign-req server "$sub_name"."$host"
+            easy-rsa gen-req "$sub_name"."$host" nopass
+            easy-rsa sign-req server "$sub_name"."$host"
             echo -e "\nDONE\n"
             break
             ;;
