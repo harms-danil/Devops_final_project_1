@@ -27,8 +27,8 @@ username="harms"
 read -r -e -p "Enter the SUB_name server path (format: username@SUB.hostname): " sub_name
 server_path_ssh="$username@$sub_name.$host"
 server_name="$sub_name.$host"
-echo -e "\n$server_name \n"
-echo -e "\n$server_path \n"
+echo -e "\n$server_name"
+echo -e "\n$server_path_ssh"
 
 # Create pair crt and key
 echo -e "\n====================\nCreate crt and key \n====================\n"
