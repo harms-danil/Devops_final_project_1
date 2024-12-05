@@ -7,11 +7,13 @@ set -e
 file_ssh_keys="/root/.ssh/authorized_keys"
 file_ssh="/etc/ssh/sshd_config"
 file_grub="/etc/default/grub"
+file_bashrc="/home/$SUDO_USER/.bashrc"
 port="1985"
 #completion="\n====================\n"
-export DEBEMAIL="harmsss@yandex.ru"
-export DEBFULLNAME="Harms"
-source ~/.bashrc
+
+#echo 'export DEBEMAIL="harmsss@yandex.ru"' >> ~/.bashrc
+#echo 'export DEBFULLNAME="Harms"' >> ~/.bashrc
+#source ~/.bashrc
 
 # Check if the script is running from the root user
 if [[ "${UID}" -ne 0 ]]; then
@@ -73,6 +75,8 @@ command_check openssl "OpenSSL" openssl
 command_check update-ca-certificates "Ca-certificates" ca-certificates
 command_check basename "Basename" coreutils
 command_check htpasswd "Htpasswd" apache2-utils
+command_check dh-make "Dh-make" dh-make
+command_check devscripts "Devscripts" devscripts
 
 # Check file ssh
 if [ ! -f "$file_ssh" ]; then
@@ -83,6 +87,12 @@ fi
 # Check file grub
 if [ ! -f "$file_grub"  ]; then
     echo -e "\n====================\nFile $file_grub not found! \n====================\n"
+    exit 1
+fi
+
+# Check file .bashrc
+if [ ! -f "$file_grub"  ]; then
+    echo -e "\n====================\nFile $file_bashrc not found! \n====================\n"
     exit 1
 fi
 
@@ -176,6 +186,28 @@ while true; do
             sed -i 's/^GRUB_CMDLINE_LINUX_DEFAULT="/&ipv6.disable=1 /' $file_grub 
             sed -i 's/^GRUB_CMDLINE_LINUX="/&ipv6.disable=1 /' $file_grub
             update-grub
+            echo -e "\nDONE\n"
+            break
+            ;;
+        [Ss]*)
+            echo -e "\n"
+            break
+            ;;
+        *) echo -e "\nPlease answer C or S!\n" ;;
+    esac
+done
+
+# Add global vars in .bashrc
+echo -e "\n====================\nSetting .bashrc (add DEBEMAIL and DEBFULLNAME)\n====================\n"
+
+while true; do
+    read -r -p "Continue or Skip? (c|s) " cs
+    case $cs in
+        [Cc]*)
+            echo -e "\n\n"
+            sed -i '$a DEBEMAIL=harmsss@yandex.ru' $file_bashrc
+            sed -i '$a DEBFULLNAME=Harms' $file_bashrc
+            source /home/$SUDO_USER/.bashrc
             echo -e "\nDONE\n"
             break
             ;;
