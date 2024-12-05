@@ -1,5 +1,6 @@
 #!/bin/bash
 
+# Activate the option that interrupts script execution if any command terminates with a non-zero status
 set -e
 
 # Vars
