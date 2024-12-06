@@ -279,7 +279,7 @@ if [ ! -d /home/$SUDO_USER/keys ]; then
     exit 0
 else
     echo -e "\n====================\nDirectory /home/$SUDO_USER/keys found! \n====================\n"
-    exit 1
+    exit 0
 fi
 
 echo -e "\nSetting for VM is OK!!!\n"
