@@ -9,15 +9,6 @@ if [[ "${UID}" -ne 0 ]]; then
   exit 1
 fi
 
-# функция, которая проверяет наличие пакета в системе и в случае его отсутствия выполняет установку
-command_check() {
-  if ! command -v "$1" &>/dev/null; then
-    echo -e "\n====================\n$2 could not be found!\nInstalling...\n====================\n"
-    apt-get install -y "$3"
-    echo -e "\nDONE\n"
-  fi
-}
-
 # функция, которая проверяет наличие правила в iptables и в случае отсутствия применяет его
 iptables_add() {
   if ! iptables -C "$@" &>/dev/null; then
@@ -47,21 +38,12 @@ path_request() {
   done
 }
 
-# установим все необходимые пакеты используя функцию command_check
-systemctl restart systemd-timesyncd.service
-apt-get update
-command_check iptables "Iptables" iptables
-command_check netfilter-persistent "Netfilter-persistent" iptables-persistent
-command_check basename "Basename" coreutils
-command_check htpasswd "Htpasswd" apache2-utils
-
 # выведем в shell меню с предложением выбрать экспортер для установки
 while true; do
   echo -e "\n--------------------------\n"
   echo -e "[1] node exporter\n"
   echo -e "[2] openvpn exporter\n"
-  echo -e "[3] nginx exporter\n"
-  echo -e "[4] exit\n"
+  echo -e "[3] exit\n"
   echo -e "--------------------------\n"
   read -r -n 1 -p "Select exporter for install: " exporter
 
@@ -74,7 +56,7 @@ while true; do
     # установим ранее собранный пакет node-exporter-lab
     apt-get install -y node-exporter-lab
 
-    # запросим пути до файлов сертификата и ключа
+    # запросим пути до файлов сертификата и ключа для данной vm
     cert_path=$(path_request certificate)
     key_path=$(path_request key)
 
@@ -136,51 +118,6 @@ while true; do
     ;;
 
   3)
-    echo -e "\n====================\nConfigure Nginx /stub_status location on 8080 port before install \n====================\n"
-    echo -e "\n====================\nNginx Exporter Installing...\n====================\n"
-
-    # установим ранее собранный пакет nginx-exporter-lab
-    apt-get install -y nginx-exporter-lab
-
-    # запросим пути до файлов сертификата и ключа
-    cert_path=$(path_request certificate)
-    key_path=$(path_request key)
-
-    # отделим названия файлов от путей
-    cert_file=$(basename "$cert_path")
-    key_file=$(basename "$key_path")
-
-    # переместим файлы ключа и сертификата в рабочую директорию программы и поменяем права на владение
-    cp "$cert_path" /opt/nginx_exporter/
-    cp "$key_path" /opt/nginx_exporter/
-    new_cert_path="/opt/nginx_exporter/$cert_file"
-    new_key_path="/opt/nginx_exporter/$key_file"
-    chmod 640 "$new_cert_path"
-    chmod 640 "$new_key_path"
-    chown nginx_exporter:nginx_exporter "$new_cert_path"
-    chown nginx_exporter:nginx_exporter "$new_key_path"
-
-    # запишем данные о сертификате и ключе в конфигурационный файл
-    echo 'ARGS="-web.secured-metrics -web.ssl-server-cert '"$new_cert_path"' -web.ssl-server-key '"$new_key_path"'' >/opt/nginx_exporter/prometheus-nginx-exporter
-
-    # настроим iptables
-    echo -e "\n====================\nIptables configuration\n====================\n"
-    monitor_vm_ip=$(ip_request)
-    iptables_add INPUT -p tcp -s "$monitor_vm_ip" --dport 9113 -j ACCEPT -m comment --comment prometheus_nginx_exporter
-    echo -e "\n====================\nSaving iptables config\n====================\n"
-    service netfilter-persistent save
-    echo -e "\nDONE\n"
-
-    # перезагрузим nginx-exporter-сервис
-    systemctl daemon-reload
-    systemctl restart nginx_exporter.service
-    systemctl enable nginx_exporter.service
-
-    echo -e "\n====================\nNginx Exporter listening on port 9113\n====================\n"
-    echo -e "\nOK\n"
-    ;;
-
-  4)
     echo -e "\n\nOK\n"
     exit 0
     ;;
