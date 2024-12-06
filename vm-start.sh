@@ -75,8 +75,7 @@ command_check openssl "OpenSSL" openssl
 command_check update-ca-certificates "Ca-certificates" ca-certificates
 command_check basename "Basename" coreutils
 command_check htpasswd "Htpasswd" apache2-utils
-command_check dh-make "Dh-make" dh-make
-command_check devscripts "Devscripts" devscripts
+command_check dh_make "Dh-make" dh-make
 
 # Check file ssh
 if [ ! -f "$file_ssh" ]; then
