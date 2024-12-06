@@ -204,10 +204,10 @@ while true; do
     read -r -p "Continue or Skip? (c|s) " cs
     case $cs in
         [Cc]*)
-            if grep -q DEBEMAIL /home/$SUDO_USER/.bashrc; then
+            if [[ -z $(grep DEBEMAIL /home/$SUDO_USER/.bashrc) ]]; then
                 echo -e "\n\n"
-                sed -i '$a export DEBEMAIL=harmsss@yandex.ru' $file_bashrc
-                sed -i '$a export DEBFULLNAME=Harms' $file_bashrc
+                sed -i '$a export DEBEMAIL="harmsss@yandex.ru"' $file_bashrc
+                sed -i '$a export DEBFULLNAME="Harms"' $file_bashrc
                 source /home/$SUDO_USER/.bashrc
             else
                 echo -e "\nVars DEBEMAIL and DEBFULLNAME already exist"
