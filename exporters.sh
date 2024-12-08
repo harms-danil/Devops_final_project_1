@@ -3,127 +3,191 @@
 # Activate the option that interrupts script execution if any command terminates with a non-zero status
 set -e
 
+# Vars
+dest_dir="/home/harms"
+deb_name_node="node-exporter-harms_1.8.2-1_all.deb"
+deb_name_openvpn="openvpn-exporter-harms_0.3.0_all.deb"
+
+
 # Check if the script is running from the root user
 if [[ "${UID}" -ne 0 ]]; then
-  echo -e "You need to run this script as root!"
-  exit 1
+    echo -e "You need to run this script as root!"
+    exit 1
 fi
 
-# функция, которая проверяет наличие правила в iptables и в случае отсутствия применяет его
+# Function that checks for the presence of a rule in iptables and, if missing, applies it
 iptables_add() {
-  if ! iptables -C "$@" &>/dev/null; then
-    iptables -A "$@"
-  fi
+    if ! iptables -C "$@" &>/dev/null; then
+        iptables -A "$@"
+    fi
 }
 
-# функция, которая проверяет корректность введения ip-адреса
+# Function that checks whether the IP address is entered correctly
 ip_request() {
-  while true; do
-    read -r -p $'\n'"Enter monitor vm ip (format 10.0.0.6): " ip
-    if [[ $ip =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
-      echo "$ip"
-      break
-    fi
-  done
+    while true; do
+        read -r -p $'\n'"Enter monitor vm ip (format 10.130.0.4): " ip
+        if [[ $ip =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$ ]]; then
+            echo "$ip"
+            break
+        fi
+    done
 }
 
-# функция, которая проверяет валидность пути в linux-системе
+# Function that checks the validity of a path on a linux system
 path_request() {
-  while true; do
-    read -r -e -p $'\n'"Please input valid path to ${1}: " path
-    if [ -f "$path" ]; then
-      echo "$path"
-      break
-    fi
+    while true; do
+        read -r -e -p $'\n'"Please input valid path to ${1}: " path
+        if [ -f "$path" ]; then
+            echo "$path"
+            break
+        fi
   done
 }
 
-# выведем в shell меню с предложением выбрать экспортер для установки
+# Menu with a suggestion to select an exporter for installation
 while true; do
-  echo -e "\n--------------------------\n"
-  echo -e "[1] node exporter\n"
-  echo -e "[2] openvpn exporter\n"
-  echo -e "[3] exit\n"
-  echo -e "--------------------------\n"
-  read -r -n 1 -p "Select exporter for install: " exporter
+    echo -e "\n--------------------------\n"
+    echo -e "[1] node exporter\n"
+    echo -e "[2] openvpn exporter\n"
+    echo -e "[3] exit\n"
+    echo -e "--------------------------\n"
+    read -r -n 1 -p "Select exporter for install: " exporter
 
-  case $exporter in
+    case $exporter in
+    # Install node-exporter
+    1)
+        echo -e "\n====================\nNode Exporter Installing...\n====================\n"
+        # Check if the program is installed Node Exporter
+        if [ ! -f /usr/bin/node_exporter ]; then
+            echo -e "\n====================\nNode Exporter could not be found\nInstalling...\n====================\n"
+            systemctl restart systemd-timesyncd.service
+            wget -P $dest_dir/ https://github.com/harms-danil/Devops_final_project_1/raw/refs/heads/main/deb/"$deb_name_node"
+            dpkg -i "$deb_name_node"
+            if [ ! -d opt/node_exporter/ ]; then
+                mkdir /opt/node_exporter/
+            fi
+            rm "$deb_name_node"
+            echo -e "\nDONE\n"
+        else
+            while true; do
+                read -r -n 1 -p $'\n'"Are you ready to reinstall Node Exporter (y|n) " yn
+                case $yn in
+                [Yy]*)
+                    systemctl stop node_exporter.service
+                    systemctl disable node_exporter.service
+                    apt purge -y node-exporter-harms
+                    rm -rf /opt/node_exporter/
+        #            rm -rf /var/log/openvpn
+                    wget -P $dest_dir/ https://github.com/harms-danil/Devops_final_project_1/raw/refs/heads/main/deb/"$deb_name_node"
+                    dpkg -i "$deb_name_node"
+                    if [ ! -d /opt/node_exporter/ ]; then
+                        mkdir /opt/node_exporter/
+                    fi
+                    rm "$deb_name_node"
+                    echo -e "\nDONE\n"
+                    break
+                    ;;
+                [Nn]*)
+                    break
+                    ;;
+                *) echo -e "\nPlease answer Y or N!\n" ;;
+                esac
+            done
+        fi
+        # request the paths to the certificate and key files for this vm
+        cert_path=$(path_request certificate)
+        cert_file=$(basename "$cert_path")
 
-  # установим node-exporter
-  1)
-    echo -e "\n====================\nNode Exporter Installing...\n====================\n"
+        key_path=$(path_request key)
+        key_file=$(basename "$key_path")
 
-    # установим ранее собранный пакет node-exporter-lab
-    apt-get install -y node-exporter-lab
+        # Copy the key and certificate files to the working directory of the program and change ownership rights
+        cp "$cert_path" /opt/node_exporter/
+        cp "$key_path" /opt/node_exporter/
+        chmod 640 /opt/node_exporter/"$cert_file"
+        chmod 640 /opt/node_exporter/"$key_file"
+        chown node_exporter:node_exporter /opt/node_exporter/"$cert_file"
+        chown node_exporter:node_exporter /opt/node_exporter/"$key_file"
 
-    # запросим пути до файлов сертификата и ключа для данной vm
-    cert_path=$(path_request certificate)
-    key_path=$(path_request key)
+        # Request the authorization data and write it to the configuration file
+        read -r -p $'\n'"Node Exporter username: " username
+        read -r -p $'\n'"Node Exporter password: " -s password
+        echo -e "tls_server_config:\n  cert_file: $cert_file\n  key_file: $key_file\n\nbasic_auth_users:\n  $username: '$(htpasswd -nbB -C 10 admin "$password" | grep -o "\$.*")'" >/opt/node_exporter/web.yml
 
-    # отделим названия файлов от путей
-    cert_file=$(basename "$cert_path")
-    key_file=$(basename "$key_path")
+        # Setting up iptables
+        echo -e "\n====================\nIptables configuration\n====================\n"
+        monitor_vm_ip=$(ip_request)
+        iptables_add INPUT -p tcp -s "$monitor_vm_ip" --dport 9100 -j ACCEPT -m comment --comment prometheus_node_exporter
+        echo -e "\n====================\nSaving iptables config\n====================\n"
+        service netfilter-persistent save
+        echo -e "\nDONE\n"
 
-    # переместим файлы ключа и сертификата в рабочую директорию программы и поменяем права на владение
-    cp "$cert_path" /opt/node_exporter/
-    cp "$key_path" /opt/node_exporter/
-    chmod 640 /opt/node_exporter/"$cert_file"
-    chmod 640 /opt/node_exporter/"$key_file"
-    chown node_exporter:node_exporter /opt/node_exporter/"$cert_file"
-    chown node_exporter:node_exporter /opt/node_exporter/"$key_file"
+        # Restart node_exporter.service
+        systemctl daemon-reload
+        systemctl restart node_exporter.service
+        systemctl enable node_exporter.service
 
-    # запросим данные для авторизации и запишем их в конфигурационный файл
-    read -r -p $'\n'"Node Exporter username: " username
-    read -r -p $'\n'"Node Exporter password: " -s password
-    echo -e "tls_server_config:\n  cert_file: $cert_file\n  key_file: $key_file\n\nbasic_auth_users:\n  $username: '$(htpasswd -nbB -C 10 admin "$password" | grep -o "\$.*")'" >/opt/node_exporter/web.yml
+        echo -e "\n====================\nNode Exporter listening on port 9100\n====================\n"
+        echo -e "\nOK\n"
+        ;;
 
-    # настроим iptables
-    echo -e "\n====================\nIptables configuration\n====================\n"
-    monitor_vm_ip=$(ip_request)
-    iptables_add INPUT -p tcp -s "$monitor_vm_ip" --dport 9100 -j ACCEPT -m comment --comment prometheus_node_exporter
-    echo -e "\n====================\nSaving iptables config\n====================\n"
-    service netfilter-persistent save
-    echo -e "\nDONE\n"
+    2)
+        echo -e "\n====================\nOpenvpn Exporter Installing...\n====================\n"
+        # Check if the program is installed OpenVPN Exporter
+        if [ ! -f /usr/bin/openvpn_exporter ]; then
+            echo -e "\n====================\nNode Exporter could not be found\nInstalling...\n====================\n"
+            systemctl restart systemd-timesyncd.service
+            wget -P $dest_dir/ https://github.com/harms-danil/Devops_final_project_1/raw/refs/heads/main/deb/"$deb_name_openvpn"
+            dpkg -i "$deb_name_openvpn"
+            rm "$deb_name_openvpn"
+            echo -e "\nDONE\n"
+        else
+            while true; do
+                read -r -n 1 -p $'\n'"Are you ready to reinstall OpenVPN Exporter (y|n) " yn
+                case $yn in
+                [Yy]*)
+                    systemctl stop openvpn_exporter.service
+                    systemctl disable openvpn_exporter.service
+                    apt purge -y openvpn-exporter-harms
+        #            rm -rf /var/log/openvpn
+                    wget -P $dest_dir/ https://github.com/harms-danil/Devops_final_project_1/raw/refs/heads/main/deb/"$deb_name_openvpn"
+                    dpkg -i "$deb_name_openvpn"
+                    rm "$deb_name_openvpn"
+                    echo -e "\nDONE\n"
+                    break
+                    ;;
+                [Nn]*)
+                    break
+                    ;;
+                *) echo -e "\nPlease answer Y or N!\n" ;;
+                esac
+            done
+        fi
 
-    # перезагрузим node-exporter-сервис
-    systemctl daemon-reload
-    systemctl restart node_exporter.service
-    systemctl enable node_exporter.service
+      # Setting up iptables
+      echo -e "\n====================\nIptables configuration\n====================\n"
+      monitor_vm_ip=$(ip_request)
+      iptables_add INPUT -p tcp -s "$monitor_vm_ip" --dport 9176 -j ACCEPT -m comment --comment prometheus_openvpn_exporter
+      echo -e "\n====================\nSaving iptables config\n====================\n"
+      service netfilter-persistent save
+      echo -e "\nDONE\n"
 
-    echo -e "\n====================\nNode Exporter listening on port 9100\n====================\n"
-    echo -e "\nOK\n"
-    ;;
+      # Restart openvpn_exporter.service
+      systemctl daemon-reload
+      systemctl restart openvpn_exporter.service
+      systemctl enable openvpn_exporter.service
 
-  2)
-    echo -e "\n====================\nOpenvpn Exporter Installing...\n====================\n"
+      echo -e "\n====================\nOpenvpn Exporter listening on port 9176\n====================\n"
+      echo -e "\nOK\n"
+      ;;
 
-    # установим ранее собранный пакет openvpn-exporter-lab
-    apt-get install -y openvpn-exporter-lab
+    3)
+      echo -e "\n\nOK\n"
+      exit 0
+      ;;
 
-    # настроим iptables
-    echo -e "\n====================\nIptables configuration\n====================\n"
-    monitor_vm_ip=$(ip_request)
-    iptables_add INPUT -p tcp -s "$monitor_vm_ip" --dport 9176 -j ACCEPT -m comment --comment prometheus_openvpn_exporter
-    echo -e "\n====================\nSaving iptables config\n====================\n"
-    service netfilter-persistent save
-    echo -e "\nDONE\n"
-
-    # перезагрузим openvpn-exporter-сервис
-    systemctl daemon-reload
-    systemctl restart openvpn_exporter.service
-    systemctl enable openvpn_exporter.service
-
-    echo -e "\n====================\nOpenvpn Exporter listening on port 9176\n====================\n"
-    echo -e "\nOK\n"
-    ;;
-
-  3)
-    echo -e "\n\nOK\n"
-    exit 0
-    ;;
-
-  *)
-    echo -e "\n\nUnknown\n"
-    ;;
-  esac
+    *)
+      echo -e "\n\nUnknown\n"
+      ;;
+    esac
 done
