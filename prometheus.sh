@@ -3,6 +3,10 @@
 # Activate the option that interrupts script execution if any command terminates with a non-zero status
 set -e
 
+# Vars
+dest_dir="/home/harms"
+deb_name="prometheus-harms-2.50"
+
 # Check if the script is running from the root user
 if [[ "${UID}" -ne 0 ]]; then
   echo -e "You need to run this script as root!"
@@ -27,9 +31,40 @@ path_request() {
   done
 }
 
+# Check if the program is installed Prometheus and alertmanager
+if [ ! -d /etc/prometheus/ ]; then
+    echo -e "\n====================\nPrometheus could not be found\nInstalling...\n====================\n"
+    systemctl restart systemd-timesyncd.service
+    wget -P $dest_dir/ https://github.com/harms-danil/Devops_final_project_1/raw/refs/heads/main/deb/"$deb_name"
+    dpkg -i "$deb_name"
+    echo -e "\nDONE\n"
+else
+    while true; do
+        read -r -n 1 -p $'\n'"Are you ready to reinstall Prometheus and Alertmanager (y|n) " yn
+        case $yn in
+        [Yy]*)
+            systemctl stop prometheus-alertmanager.service
+            systemctl disable prometheus-alertmanager.service
+            apt purge -y prometheus
+            apt purge -y prometheus-harms
+#            rm -rf /etc/prometheus
+#            rm -rf /var/log/openvpn
+            wget -P $dest_dir/ https://github.com/harms-danil/Devops_final_project_1/raw/refs/heads/main/deb/"$deb_name"
+            dpkg -i "$deb_name"
+            echo -e "\nDONE\n"
+            break
+            ;;
+        [Nn]*)
+            break
+            ;;
+        *) echo -e "\nPlease answer Y or N!\n" ;;
+    esac
+  done
+fi
+
 # Request the address of the private network and check it for correctness
 while true; do
-  read -r -p $'\n'"Private network (format 10.0.0.0/24): " private_net
+  read -r -p $'\n'"Private network (format 10.130.0.0/24): " private_net
   if [[ ! $private_net =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\/[0-9]{1,2}$ ]]; then
     echo -e "\nPrefix not valid!\n"
   else
@@ -51,50 +86,49 @@ echo -e "\nDONE\n"
 # Set up HTTPS
 echo -e "\n====================\nHTTPS configuration \n====================\n"
 
-# запросим путь до файла сертификата, перенесем его в рабочую директорию программы и поменяем владельца
+# Request the path to the certificate file and transfer it to the working directory of the program
+echo -e "\nPath for certificate server"
 cert_path=$(path_request certificate)
 cp "$cert_path" /etc/prometheus/
 cert_file=$(basename "$cert_path")
 chmod 640 /etc/prometheus/"$cert_file"
 chown prometheus:prometheus /etc/prometheus/"$cert_file"
 
-# запросим путь до файла ключа, перенесем его в рабочую директорию программы и поменяем владельца
+# Request the path to the key file and transfer it to the working directory of the program
+echo -e "\nPath for key server"
 key_path=$(path_request key)
 cp "$key_path" /etc/prometheus/
 key_file=$(basename "$key_path")
 chmod 640 /etc/prometheus/"$key_file"
 chown prometheus:prometheus /etc/prometheus/"$key_file"
 
-# перенесем в директорию prometheus сертификаты экспортеров
+# transfer the certificates of exporters to the prometheus directory
 while true; do
   read -r -n 1 -p $'\n\n'"Add exporter's certificate to prometheus directory? (y|n) " yn
   case $yn in
   [Yy]*)
-    echo -e "\n"
     exp_cert_path=$(path_request certificate)
     cp "$exp_cert_path" /etc/prometheus/
     exp_cert_file=$(basename "$exp_cert_path")
     chmod 640 /etc/prometheus/"$exp_cert_file"
     chown prometheus:prometheus /etc/prometheus/"$exp_cert_file"
     ;;
-
   [Nn]*)
     echo -e "\n"
     break
     ;;
-
   *) echo -e "\nPlease answer Y or N!\n" ;;
   esac
 done
 
-# запросим username и password для авторизации в программе
+# request a username and password to log in to the program
 read -r -p $'\n'"Prometheus username: " username
 read -r -p $'\n'"Prometheus password: " -s password
 
-# запросим доменное имя для подключения prometheus к alertmanager
+# request a domain name to connect prometheus to alertmanager
 read -r -p $'\n\n'"Prometheus domain name (format monitor.harms-devops.ru): " domain_name
 
-# запишем настройки в конфигурационный файл /etc/prometheus/web.yml
+# write the settings to the configuration file /etc/prometheus/web.yml
 echo -e "tls_server_config:\n  cert_file: $cert_file\n  key_file: $key_file\n\nbasic_auth_users:\n  $username: '$(htpasswd -nbB -C 10 admin "$password" | grep -o "\$.*")'" >/etc/prometheus/web.yml
 
 # внесем изменения в конфигурационный файл /etc/prometheus/prometheus.yml в блок alerting
