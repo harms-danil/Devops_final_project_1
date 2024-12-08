@@ -2,8 +2,8 @@ scrape_configs:
   - job_name: 'prometheus-monitor'
     scheme: https
     basic_auth:
-      username: harms
-      password: override
+      username: admin
+      password: password
     tls_config:
       ca_file: monitor.harms-devops.ru.crt
     scrape_interval: 5s
