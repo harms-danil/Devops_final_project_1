@@ -47,9 +47,7 @@ else
             systemctl stop prometheus-alertmanager.service
             systemctl disable prometheus-alertmanager.service
             apt purge -y prometheus
-            apt purge -y prometheus-harms
-#            rm -rf /etc/prometheus
-#            rm -rf /var/log/openvpn
+            apt purge -y prometheus-harms || rm -rf /etc/prometheus
             wget -P $dest_dir/ https://github.com/harms-danil/Devops_final_project_1/raw/refs/heads/main/deb/"$deb_name"
             dpkg -i "$deb_name"
             echo -e "\nDONE\n"
