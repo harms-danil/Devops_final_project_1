@@ -141,7 +141,7 @@ while true; do
             echo -e "\nDONE\n"
         else
             while true; do
-                read -r -n 1 -p $'\n'"Are you ready to reinstall OpenVPN Exporter (y|n) " yn
+                read -r -n 1 -p $'\n'"Are you ready to reinstall OpenVPN Exporter (y|n) "$'\n' yn
                 case $yn in
                 [Yy]*)
                     systemctl stop openvpn_exporter.service
