@@ -63,9 +63,9 @@ while true; do
             systemctl restart systemd-timesyncd.service
             wget -P $dest_dir/ https://github.com/harms-danil/Devops_final_project_1/raw/refs/heads/main/deb/"$deb_name_node"
             dpkg -i "$deb_name_node"
-            if [ ! -d opt/node_exporter/ ]; then
-                mkdir /opt/node_exporter/
-            fi
+#            if [ ! -d opt/node_exporter/ ]; then
+#                mkdir /opt/node_exporter/
+#            fi
             rm "$deb_name_node"
             echo -e "\nDONE\n"
         else
@@ -80,9 +80,9 @@ while true; do
         #            rm -rf /var/log/openvpn
                     wget -P $dest_dir/ https://github.com/harms-danil/Devops_final_project_1/raw/refs/heads/main/deb/"$deb_name_node"
                     dpkg -i "$deb_name_node"
-                    if [ ! -d /opt/node_exporter/ ]; then
-                        mkdir /opt/node_exporter/
-                    fi
+#                    if [ ! -d /opt/node_exporter/ ]; then
+#                        mkdir /opt/node_exporter/
+#                    fi
                     rm "$deb_name_node"
                     echo -e "\nDONE\n"
                     break

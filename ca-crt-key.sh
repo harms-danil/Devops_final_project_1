@@ -50,7 +50,7 @@ while true; do
                 exit 1
             fi
             # remove req
-            rm $dest_dir/easy-rsa/pki/reqs/"$server_name"
+            rm $dest_dir/easy-rsa/pki/reqs/"$server_name.req"
             echo -e "\nDONE"
             break
             ;;

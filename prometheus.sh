@@ -6,6 +6,7 @@ set -e
 # Vars
 dest_dir="/home/harms"
 deb_name="prometheus-harms-2.50"
+# https://github.com/prometheus/alertmanager/releases/download/v0.27.0/alertmanager-0.27.0.linux-amd64.tar.gz
 
 # Check if the script is running from the root user
 if [[ "${UID}" -ne 0 ]]; then
