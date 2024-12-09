@@ -75,9 +75,7 @@ while true; do
                 [Yy]*)
                     systemctl stop node_exporter.service
                     systemctl disable node_exporter.service
-                    apt purge -y node-exporter-harms
-                    rm -rf /opt/node_exporter/
-        #            rm -rf /var/log/openvpn
+                    apt purge -y node-exporter-harms || rm -rf /opt/node_exporter/
                     wget -P $dest_dir/ https://github.com/harms-danil/Devops_final_project_1/raw/refs/heads/main/deb/"$deb_name_node"
                     dpkg -i "$deb_name_node"
 #                    if [ ! -d /opt/node_exporter/ ]; then
@@ -149,7 +147,6 @@ while true; do
                     systemctl stop openvpn_exporter.service
                     systemctl disable openvpn_exporter.service
                     apt purge -y openvpn-exporter-harms
-        #            rm -rf /var/log/openvpn
                     wget -P $dest_dir/ https://github.com/harms-danil/Devops_final_project_1/raw/refs/heads/main/deb/"$deb_name_openvpn"
                     dpkg -i "$deb_name_openvpn"
                     rm "$deb_name_openvpn"
