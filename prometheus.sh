@@ -5,7 +5,8 @@ set -e
 
 # Vars
 dest_dir="/home/harms"
-deb_name="prometheus-harms_2.55.1.linux-amd64_all.deb"
+deb_name_prometheus="prometheus-harms_2.55.1.linux-amd64_all.deb"
+deb_name_alertmanager="alertmanager-harms_0.27.0.linux-amd64_all.deb"
 
 # Check if the script is running from the root user
 if [[ "${UID}" -ne 0 ]]; then
@@ -31,34 +32,91 @@ path_request() {
   done
 }
 
-# Check if the program is installed Prometheus and alertmanager
-if [ ! -d /etc/prometheus/ ]; then
-    echo -e "\n====================\nPrometheus could not be found\nInstalling...\n====================\n"
-    systemctl restart systemd-timesyncd.service
-    wget -P $dest_dir/ https://github.com/harms-danil/Devops_final_project_1/raw/refs/heads/main/deb/"$deb_name"
-    dpkg -i "$deb_name"
-    echo -e "\nDONE\n"
-else
-    while true; do
-        read -r -n 1 -p $'\n'"Are you ready to reinstall Prometheus and Alertmanager (y|n) " yn
-        case $yn in
-        [Yy]*)
-            systemctl stop prometheus-alertmanager.service
-            systemctl disable prometheus-alertmanager.service
-            apt purge -y prometheus
-            apt purge -y prometheus-harms || rm -rf /etc/prometheus
-            wget -P $dest_dir/ https://github.com/harms-danil/Devops_final_project_1/raw/refs/heads/main/deb/"$deb_name"
-            dpkg -i "$deb_name"
+# Menu with a suggestion to select a service for installation
+while true; do
+    echo -e "\n--------------------------\n"
+    echo -e "[1] Prometheus\n"
+    echo -e "[2] Alertmanager\n"
+#    echo -e "[3] Grafana\n"
+    echo -e "[3] exit\n"
+    echo -e "--------------------------\n"
+    read -r -n 1 -p "Select service for install: " service
+
+    case $service in
+    # Install Prometheus
+    1)
+        # Check if the program is installed Prometheus
+        if [ ! -f /etc/prometheus/prometheus ]; then
+            echo -e "\n====================\nPrometheus could not be found\nInstalling...\n====================\n"
+            systemctl restart systemd-timesyncd.service
+            wget -P $dest_dir/ https://github.com/harms-danil/Devops_final_project_1/raw/refs/heads/main/deb/"$deb_name_prometheus"
+            dpkg -i "$deb_name_prometheus"
+            rm -f "$deb_name_prometheus"
             echo -e "\nDONE\n"
-            break
-            ;;
-        [Nn]*)
-            break
-            ;;
-        *) echo -e "\nPlease answer Y or N!\n" ;;
+        else
+            while true; do
+                read -r -n 1 -p $'\n'"Are you ready to reinstall Prometheus (y|n) "$'\n' yn
+                case $yn in
+                [Yy]*)
+                    systemctl stop prometheus.service
+                    systemctl disable prometheus.service
+                    apt purge -y prometheus
+                    apt purge -y prometheus-harms
+                    wget -P $dest_dir/ https://github.com/harms-danil/Devops_final_project_1/raw/refs/heads/main/deb/"$deb_name_prometheus"
+                    dpkg -i "$deb_name_prometheus"
+                    rm -f "$deb_name_prometheus"
+                    echo -e "\nDONE\n"
+                    break
+                    ;;
+                [Nn]*)
+                    break
+                    ;;
+                *) echo -e "\nPlease answer Y or N!\n" ;;
+            esac
+          done
+        fi
+        ;;
+    2)
+        # Check if the program is installed Alertmanager
+        if [ ! -f /etc/prometheus/alertmanager ]; then
+            echo -e "\n====================\nAlertmanager could not be found\nInstalling...\n====================\n"
+            systemctl restart systemd-timesyncd.service
+            wget -P $dest_dir/ https://github.com/harms-danil/Devops_final_project_1/raw/refs/heads/main/deb/"$deb_name_alertmanager"
+            dpkg -i "$deb_name_alertmanager"
+            rm -f "$deb_name_alertmanager"
+            echo -e "\nDONE\n"
+        else
+            while true; do
+                read -r -n 1 -p $'\n'"Are you ready to reinstall Alertmanager (y|n) "$'\n' yn
+                case $yn in
+                [Yy]*)
+                    systemctl stop prometheus-alertmanager.service
+                    systemctl disable prometheus-alertmanager.service
+                    apt purge -y alertmanager
+                    apt purge -y alertmanager-harms
+                    wget -P $dest_dir/ https://github.com/harms-danil/Devops_final_project_1/raw/refs/heads/main/deb/"$deb_name_alertmanager"
+                    dpkg -i "$deb_name_alertmanager"
+                    rm -f "$deb_name_alertmanager"
+                    echo -e "\nDONE\n"
+                    break
+                    ;;
+                [Nn]*)
+                    break
+                    ;;
+                *) echo -e "\nPlease answer Y or N!\n" ;;
+            esac
+          done
+        fi
+        ;;
+    3)
+        echo -e "\n\nOK\n"
+        exit 0
+        ;;
+    *)
+        echo -e "\n\nUnknown\n"
+        ;;
     esac
-  done
-fi
+done
 
 # Request the address of the private network and check it for correctness
 while true; do
