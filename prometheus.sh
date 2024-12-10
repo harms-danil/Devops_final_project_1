@@ -210,7 +210,7 @@ while true; do
     [Yy]*)
         while true; do
             read -r -p $'\n\n'"Enter string in format '<ip> <domain>': " domain_str
-            if [[ $domain_str =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}[[:blank:]][a-z\.]+$ ]]; then # работает не верно
+            if [[ $domain_str =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}[[:blank:]][a-z\.-]{2,3}+$ ]]; then
                 if ! grep -Fxq "$domain_str" /etc/hosts &>/dev/null; then
                     echo -e "\nString $domain_str added to /etc/hosts\n\n"
                     echo "$domain_str" >>/etc/hosts
