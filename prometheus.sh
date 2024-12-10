@@ -186,8 +186,8 @@ read -r -p $'\n\n'"Prometheus domain name (format monitor.harms-devops.ru): " do
 echo -e "tls_server_config:\n  cert_file: $cert_file\n  key_file: $key_file\n\nbasic_auth_users:\n  $username: '$(htpasswd -nbB -C 10 admin "$password" | grep -o "\$.*")'" >/etc/prometheus/web.yml
 
 # внесем изменения в конфигурационный файл /etc/prometheus/prometheus.yml в блок alerting
-sed -r -i '0,/(^.*\susername:\s).*$/s//\1'"$username"'/' /etc/prometheus/prometheus.yml
-sed -r -i '0,/(^.*\spassword:\s).*$/s//\1'"$password"'/' /etc/prometheus/prometheus.yml
+sed -r -i '/(^.*\susername:\s).*$/s//\1'"$username"'/' /etc/prometheus/prometheus.yml       # убрал 0,
+sed -r -i '/(^.*\spassword:\s).*$/s//\1'"$password"'/' /etc/prometheus/prometheus.yml
 sed -r -i '0,/(^.*\sca_file:\s).*$/s//\1'"$cert_file"'/' /etc/prometheus/prometheus.yml
 sed -r -i "0,/(^.*\stargets:\s).*/s//\1['$domain_name:9093']/" /etc/prometheus/prometheus.yml
 
@@ -210,7 +210,7 @@ while true; do
     [Yy]*)
         while true; do
             read -r -p $'\n\n'"Enter string in format '<ip> <domain>': " domain_str
-            if [[ $domain_str =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}[[:blank:]][a-z\.]+$ ]]; then
+            if [[ $domain_str =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}[[:blank:]][a-z\.]+$ ]]; then # работает не верно
                 if ! grep -Fxq "$domain_str" /etc/hosts &>/dev/null; then
                     echo -e "\nString $domain_str added to /etc/hosts\n\n"
                     echo "$domain_str" >>/etc/hosts
