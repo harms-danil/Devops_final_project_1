@@ -161,30 +161,30 @@ while true; do
             done
         fi
 
-      # Setting up iptables
-      echo -e "\n====================\nIptables configuration\n====================\n"
-      monitor_vm_ip=$(ip_request)
-      iptables_add INPUT -p tcp -s "$monitor_vm_ip" --dport 9176 -j ACCEPT -m comment --comment prometheus_openvpn_exporter
-      echo -e "\n====================\nSaving iptables config\n====================\n"
-      service netfilter-persistent save
-      echo -e "\nDONE\n"
+        # Setting up iptables
+        echo -e "\n====================\nIptables configuration\n====================\n"
+        monitor_vm_ip=$(ip_request)
+        iptables_add INPUT -p tcp -s "$monitor_vm_ip" --dport 9176 -j ACCEPT -m comment --comment prometheus_openvpn_exporter
+        echo -e "\n====================\nSaving iptables config\n====================\n"
+        service netfilter-persistent save
+        echo -e "\nDONE\n"
 
-      # Restart openvpn_exporter.service
-      systemctl daemon-reload
-      systemctl restart openvpn_exporter.service
-      systemctl enable openvpn_exporter.service
+        # Restart openvpn_exporter.service
+        systemctl daemon-reload
+        systemctl restart openvpn_exporter.service
+        systemctl enable openvpn_exporter.service
 
-      echo -e "\n====================\nOpenvpn Exporter listening on port 9176\n====================\n"
-      echo -e "\nOK\n"
-      ;;
+        echo -e "\n====================\nOpenvpn Exporter listening on port 9176\n====================\n"
+        echo -e "\nOK\n"
+        ;;
 
     3)
-      echo -e "\n\nOK\n"
-      exit 0
-      ;;
+        echo -e "\n\nOK\n"
+        exit 0
+        ;;
 
     *)
-      echo -e "\n\nUnknown\n"
-      ;;
+        echo -e "\n\nUnknown\n"
+        ;;
     esac
 done

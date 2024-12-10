@@ -108,7 +108,7 @@ while true; do
         ;;
     3)
         echo -e "\n\nOK\n"
-        exit 0
+        break
         ;;
     *)
         echo -e "\n\nUnknown\n"
