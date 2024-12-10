@@ -46,7 +46,7 @@ while true; do
     # Install Prometheus
     1)
         # Check if the program is installed Prometheus
-        if [ ! -f /etc/prometheus/ ]; then
+        if [ ! -d /etc/prometheus/ ]; then
             echo -e "\n====================\nPrometheus could not be found\nInstalling...\n====================\n"
             systemctl restart systemd-timesyncd.service
             wget -P $dest_dir/ https://github.com/harms-danil/Devops_final_project_1/raw/refs/heads/main/deb/"$deb_name_prometheus"
@@ -77,7 +77,7 @@ while true; do
         ;;
     2)
         # Check if the program is installed Alertmanager
-        if [ ! -f /etc/prometheus/alertmanager ]; then
+        if [ ! -d /etc/prometheus/alertmanager ]; then
             echo -e "\n====================\nAlertmanager could not be found\nInstalling...\n====================\n"
             systemctl restart systemd-timesyncd.service
             wget -P $dest_dir/ https://github.com/harms-danil/Devops_final_project_1/raw/refs/heads/main/deb/"$deb_name_alertmanager"
