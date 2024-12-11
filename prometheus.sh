@@ -40,11 +40,12 @@ path_request() {
 
 # Menu with a suggestion to select a service for installation
 while true; do
+    echo -e "\n====================\nSelect a service for installation\n====================\n"
     echo -e "\n--------------------------\n"
     echo -e "[1] Prometheus\n"
     echo -e "[2] Alertmanager\n"
 #    echo -e "[3] Grafana\n"
-    echo -e "[3] exit\n"
+    echo -e "[3] Next setting\n"
     echo -e "--------------------------\n"
     read -r -n 1 -p "Select service for install: " service
 
