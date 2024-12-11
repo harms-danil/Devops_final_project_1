@@ -8,6 +8,7 @@ dest_dir="/home/harms"
 deb_name_prometheus="prometheus-harms_2.55.1.linux-amd64_all.deb"
 deb_name_alertmanager="alertmanager-harms_0.27.0.linux-amd64_all.deb"
 private_net="10.130.0.0/24"
+domain_name="monitor.harms-devops.ru"
 
 # Check if the script is running from the root user
 if [[ "${UID}" -ne 0 ]]; then
@@ -154,7 +155,6 @@ echo -e "\nDONE\n"
 
 # Set up HTTPS
 echo -e "\n====================\nHTTPS configuration \n====================\n\n"
-echo -e "\n====================\nChange to path for certificate and key \n====================\n"
 while true; do
     read -r -n 1 -p "Continue or Skip? (c|s) " cs
     case $cs in
@@ -177,21 +177,97 @@ while true; do
 
         # transfer the certificates of exporters to the prometheus directory
         while true; do
-          read -r -n 1 -p $'\n\n'"Add exporter's certificate to prometheus directory? (y|n) " yn
-          case $yn in
-          [Yy]*)
-            exp_cert_path=$(path_request certificate)
-            cp "$exp_cert_path" /etc/prometheus/
-            exp_cert_file=$(basename "$exp_cert_path")
-            chmod 640 /etc/prometheus/"$exp_cert_file"
-            chown prometheus:prometheus /etc/prometheus/"$exp_cert_file"
-            ;;
-          [Nn]*)
-            echo -e "\n"
-            break
-            ;;
-          *) echo -e "\nPlease answer Y or N!\n" ;;
-          esac
+            read -r -n 1 -p $'\n\n'"Add exporter's certificate to prometheus directory? (y|n) " yn
+            case $yn in
+            [Yy]*)
+                exp_cert_path=$(path_request certificate)
+                cp "$exp_cert_path" /etc/prometheus/
+                exp_cert_file=$(basename "$exp_cert_path")
+                chmod 640 /etc/prometheus/"$exp_cert_file"
+                chown prometheus:prometheus /etc/prometheus/"$exp_cert_file"
+                ;;
+            [Nn]*)
+                echo -e "\n"
+                break
+                ;;
+            *) echo -e "\nPlease answer Y or N!\n" ;;
+            esac
+        done
+
+
+        # Request a username and password to log in to the program
+        read -r -p $'\n'"Prometheus username: " username
+        read -r -p $'\n'"Prometheus password: " -s password
+
+        # Request a domain name to connect prometheus to alertmanager
+        while true; do
+            read -r -n 1 -p $'\n\n'"Change the Prometheus domain name ($domain_name) (y|n) " yn
+            case $yn in
+            [Yy]*)
+                read -r -p $'\n\n'"Prometheus domain name (format monitor.harms-devops.ru): " domain_name
+                break
+                ;;
+            [Nn]*)
+                echo -e "\n"
+                break
+                ;;
+            *) echo -e "\nPlease answer Y or N!\n" ;;
+            esac
+        done
+
+        # write the settings to the configuration file /etc/prometheus/web.yml
+        echo -e "tls_server_config:\n  cert_file: $cert_file\n  key_file: $key_file\n\nbasic_auth_users:\n  $username: '$(htpasswd -nbB -C 10 admin "$password" | grep -o "\$.*")'" >/etc/prometheus/web.yml
+
+        # внесем изменения в конфигурационный файл /etc/prometheus/prometheus.yml в блок alerting
+        sed -r -i '/(^.*\susername:\s).*$/s//\1'"$username"'/' /etc/prometheus/prometheus.yml       # убрал 0,
+        sed -r -i '/(^.*\spassword:\s).*$/s//\1'"$password"'/' /etc/prometheus/prometheus.yml
+        sed -r -i '0,/(^.*\sca_file:\s).*$/s//\1'"$cert_file"'/' /etc/prometheus/prometheus.yml
+        sed -r -i "0,/(^.*\stargets:\s).*/s//\1['$domain_name:9093']/" /etc/prometheus/prometheus.yml
+
+        # Perform the configuration DNS
+        echo -e "\n\n====================\nDNS configuration\n====================\n"
+
+        # Change the /etc/cloud/cloud.sap.d/95-cloud file.sap the value of the manager_etc_hosts parameter
+        # from true to false to save /etc/hosts after reboot
+        sed -r -i 's/(^manage_etc_hosts:\s).*$/\1'"false"'/' /etc/cloud/cloud.cfg.d/95-cloud.cfg
+
+        # Assign the prometheus domain name to the localhost address
+        if ! grep -Fxq "127.0.0.1 $domain_name" /etc/hosts &>/dev/null; then
+          echo "127.0.0.1 $domain_name" >>/etc/hosts
+          echo -e "\nString '127.0.0.1 $domain_name' added to /etc/hosts\n\n"
+        fi
+
+        echo -e "/etc/hosts file content:\n\n"
+        cat /etc/hosts
+
+        # Requesting lines to add to /etc/hosts
+        while true; do
+            read -r -n 1 -p $'\n\n'"Add new string to /etc/hosts? (y|n) " yn
+            case $yn in
+            [Yy]*)
+                while true; do
+                    read -r -p $'\n\n'"Enter string in format '<ip> <domain>': " domain_str
+                    if [[ $domain_str =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}[[:blank:]][a-z\.-]{2,3}+$ ]]; then
+                        if ! grep -Fxq "$domain_str" /etc/hosts &>/dev/null; then
+                            echo -e "\nString $domain_str added to /etc/hosts\n\n"
+                            echo "$domain_str" >>/etc/hosts
+                            echo -e "\n\n/etc/hosts file content:\n\n"
+                            cat /etc/hosts
+                        else
+                            echo -e "\nString $domain_str already exist"
+                        fi
+                        break
+                    else
+                        echo -e "\nWrong string format!\n"
+                    fi
+                done
+                ;;
+            [Nn]*)
+                echo -e "\n"
+                break
+                ;;
+            *) echo -e "\nPlease answer Y or N!\n" ;;
+            esac
         done
         ;;
     [Ss]*)
@@ -199,69 +275,6 @@ while true; do
         break
         ;;
     *) echo -e "\nPlease answer C or S!\n" ;;
-    esac
-done
-
-# request a username and password to log in to the program
-read -r -p $'\n'"Prometheus username: " username
-read -r -p $'\n'"Prometheus password: " -s password
-
-# request a domain name to connect prometheus to alertmanager
-read -r -p $'\n\n'"Prometheus domain name (format monitor.harms-devops.ru): " domain_name
-
-# write the settings to the configuration file /etc/prometheus/web.yml
-echo -e "tls_server_config:\n  cert_file: $cert_file\n  key_file: $key_file\n\nbasic_auth_users:\n  $username: '$(htpasswd -nbB -C 10 admin "$password" | grep -o "\$.*")'" >/etc/prometheus/web.yml
-
-# внесем изменения в конфигурационный файл /etc/prometheus/prometheus.yml в блок alerting
-sed -r -i '/(^.*\susername:\s).*$/s//\1'"$username"'/' /etc/prometheus/prometheus.yml       # убрал 0,
-sed -r -i '/(^.*\spassword:\s).*$/s//\1'"$password"'/' /etc/prometheus/prometheus.yml
-sed -r -i '0,/(^.*\sca_file:\s).*$/s//\1'"$cert_file"'/' /etc/prometheus/prometheus.yml
-sed -r -i "0,/(^.*\stargets:\s).*/s//\1['$domain_name:9093']/" /etc/prometheus/prometheus.yml
-
-# выполним настройку DNS
-echo -e "\n\n====================\nDNS configuration\n====================\n"
-
-# Change the /etc/cloud/cloud.sap.d/95-cloud file.sap the value of the manager_etc_hosts parameter
-# from true to false to save /etc/hosts after reboot
-#sed -r -i 's/(^.*\smanage_etc_hosts:\s).*$/\1'"false"'/' /etc/cloud/cloud.cfg.d/95-cloud.cfg
-sed -r -i 's/(^manage_etc_hosts:\s).*$/\1'"false"'/' /etc/cloud/cloud.cfg.d/95-cloud.cfg
-
-# закрепим доменное имя prometheus за адресом localhost
-if ! grep -Fxq "127.0.0.1 $domain_name" /etc/hosts &>/dev/null; then
-  echo "127.0.0.1 $domain_name" >>/etc/hosts
-  echo -e "\nString '127.0.0.1 $domain_name' added to /etc/hosts\n\n"
-fi
-
-echo -e "/etc/hosts file content:\n\n"
-cat /etc/hosts
-
-# запросим у пользователя строки для добавления в /etc/hosts
-while true; do
-    read -r -n 1 -p $'\n\n'"Add new string to /etc/hosts? (y|n) " yn
-    case $yn in
-    [Yy]*)
-        while true; do
-            read -r -p $'\n\n'"Enter string in format '<ip> <domain>': " domain_str
-            if [[ $domain_str =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}[[:blank:]][a-z\.-]{2,3}+$ ]]; then
-                if ! grep -Fxq "$domain_str" /etc/hosts &>/dev/null; then
-                    echo -e "\nString $domain_str added to /etc/hosts\n\n"
-                    echo "$domain_str" >>/etc/hosts
-                    echo -e "\n\n/etc/hosts file content:\n\n"
-                    cat /etc/hosts
-                else
-                    echo -e "\nString $domain_str already exist"
-                fi
-                break
-            else
-                echo -e "\nWrong string format!\n"
-            fi
-        done
-        ;;
-    [Nn]*)
-        echo -e "\n"
-        break
-        ;;
-    *) echo -e "\nPlease answer Y or N!\n" ;;
     esac
 done
 
