@@ -117,14 +117,28 @@ while true; do
 done
 
 # Request the address of the private network and check it for correctness
+echo -e "\n====================\nChange the address of the private network \n====================\n"
 while true; do
-  read -r -p $'\n'"Private network (format 10.130.0.0/24): " private_net
-  if [[ ! $private_net =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\/[0-9]{1,2}$ ]]; then
-    echo -e "\nPrefix not valid!\n"
-  else
-    break
-  fi
+    read -r -n 1 -p "Continue or Skip? (c|s) " cs
+    case $cs in
+    [Cc]*)
+        while true; do
+            read -r -p $'\n'"Private network (format 10.130.0.0/24): " private_net
+            if [[ ! $private_net =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\/[0-9]{1,2}$ ]]; then
+                echo -e "\nPrefix not valid!\n"
+            else
+                break
+            fi
+        done
+        ;;
+    [Ss]*)
+        echo -e "\n"
+        break
+        ;;
+    *) echo -e "\nPlease answer C or S!\n" ;;
+    esac
 done
+
 
 # Set up iptables
 echo -e "\n====================\nIptables configuration \n====================\n"
@@ -138,41 +152,53 @@ service netfilter-persistent save
 echo -e "\nDONE\n"
 
 # Set up HTTPS
-echo -e "\n====================\nHTTPS configuration \n====================\n"
-
-# Request the path to the certificate file and transfer it to the working directory of the program
-echo -e "\nPath for certificate server"
-cert_path=$(path_request certificate)
-cp "$cert_path" /etc/prometheus/
-cert_file=$(basename "$cert_path")
-chmod 640 /etc/prometheus/"$cert_file"
-chown prometheus:prometheus /etc/prometheus/"$cert_file"
-
-# Request the path to the key file and transfer it to the working directory of the program
-echo -e "\nPath for key server"
-key_path=$(path_request key)
-cp "$key_path" /etc/prometheus/
-key_file=$(basename "$key_path")
-chmod 640 /etc/prometheus/"$key_file"
-chown prometheus:prometheus /etc/prometheus/"$key_file"
-
-# transfer the certificates of exporters to the prometheus directory
+echo -e "\n====================\nHTTPS configuration \n====================\n\n"
+echo -e "\n====================\nChange to path for certificate and key \n====================\n"
 while true; do
-  read -r -n 1 -p $'\n\n'"Add exporter's certificate to prometheus directory? (y|n) " yn
-  case $yn in
-  [Yy]*)
-    exp_cert_path=$(path_request certificate)
-    cp "$exp_cert_path" /etc/prometheus/
-    exp_cert_file=$(basename "$exp_cert_path")
-    chmod 640 /etc/prometheus/"$exp_cert_file"
-    chown prometheus:prometheus /etc/prometheus/"$exp_cert_file"
-    ;;
-  [Nn]*)
-    echo -e "\n"
-    break
-    ;;
-  *) echo -e "\nPlease answer Y or N!\n" ;;
-  esac
+    read -r -n 1 -p "Continue or Skip? (c|s) " cs
+    case $cs in
+    [Cc]*)
+        # Request the path to the certificate file and transfer it to the working directory of the program
+        echo -e "\nPath for certificate server"
+        cert_path=$(path_request certificate)
+        cp "$cert_path" /etc/prometheus/
+        cert_file=$(basename "$cert_path")
+        chmod 640 /etc/prometheus/"$cert_file"
+        chown prometheus:prometheus /etc/prometheus/"$cert_file"
+
+        # Request the path to the key file and transfer it to the working directory of the program
+        echo -e "\nPath for key server"
+        key_path=$(path_request key)
+        cp "$key_path" /etc/prometheus/
+        key_file=$(basename "$key_path")
+        chmod 640 /etc/prometheus/"$key_file"
+        chown prometheus:prometheus /etc/prometheus/"$key_file"
+
+        # transfer the certificates of exporters to the prometheus directory
+        while true; do
+          read -r -n 1 -p $'\n\n'"Add exporter's certificate to prometheus directory? (y|n) " yn
+          case $yn in
+          [Yy]*)
+            exp_cert_path=$(path_request certificate)
+            cp "$exp_cert_path" /etc/prometheus/
+            exp_cert_file=$(basename "$exp_cert_path")
+            chmod 640 /etc/prometheus/"$exp_cert_file"
+            chown prometheus:prometheus /etc/prometheus/"$exp_cert_file"
+            ;;
+          [Nn]*)
+            echo -e "\n"
+            break
+            ;;
+          *) echo -e "\nPlease answer Y or N!\n" ;;
+          esac
+        done
+        ;;
+    [Ss]*)
+        echo -e "\n"
+        break
+        ;;
+    *) echo -e "\nPlease answer C or S!\n" ;;
+    esac
 done
 
 # request a username and password to log in to the program
