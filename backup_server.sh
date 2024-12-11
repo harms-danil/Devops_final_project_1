@@ -20,6 +20,14 @@ iptables_add() {
     fi
 }
 
+# Mounting BTRFS in /backup
+echo -e "\n====================\nMounting a BTRFS format partition \n====================\n"
+mkdir /backup
+if ! grep -Fxq "UUID=$UUID /backup btrfs defaults 0 0" /etc/fstab &>/dev/null; then
+          echo "UUID=$UUID /backup btrfs defaults 0 0" >>/etc/fstab
+          echo -e "\nString 'echo "UUID=$UUID /backup btrfs defaults 0 0" >> /etc/fstab' added to /etc/fstab\n\n"
+fi
+
 # Add repository UrBackup server and update
 add-apt-repository ppa:uroni/urbackup
 apt update -y
