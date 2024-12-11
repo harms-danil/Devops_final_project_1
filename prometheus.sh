@@ -130,13 +130,14 @@ while true; do
     case $cs in
     [Cc]*)
         while true; do
-            read -r -p $'\n'"Private network (format 10.130.0.0/24): " private_net
+            read -r -p $'\n\n'"Private network (format 10.130.0.0/24): " private_net
             if [[ ! $private_net =~ ^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\/[0-9]{1,2}$ ]]; then
                 echo -e "\nPrefix not valid!\n"
             else
                 break
             fi
         done
+        break
         ;;
     [Ss]*)
         echo -e "\n"
