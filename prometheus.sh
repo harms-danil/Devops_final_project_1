@@ -118,7 +118,7 @@ while true; do
 done
 
 # Request the address of the private network and check it for correctness
-echo -e "\n====================\nChange the address of the private network \n====================\n"
+echo -e "\n====================\nChange the address of the private network ($private_net)\n====================\n"
 while true; do
     read -r -n 1 -p "Continue or Skip? (c|s) " cs
     case $cs in
