@@ -12,26 +12,30 @@ domain_name="monitor.harms-devops.ru"
 
 # Check if the script is running from the root user
 if [[ "${UID}" -ne 0 ]]; then
-  echo -e "You need to run this script as root!"
-  exit 1
+    echo -e "You need to run this script as root!"
+    exit 1
 fi
 
 # Function that checks for the presence of a rule in iptables and, if missing, applies it
 iptables_add() {
-  if ! iptables -C "$@" &>/dev/null; then
-    iptables -A "$@"
-  fi
+    if ! iptables -C "$@" &>/dev/null; then
+        iptables -A "$@"
+    fi
 }
 
 # Function that checks the validity of a path on a linux system
 path_request() {
-  while true; do
-    read -r -e -p $'\n'"Please input valid path to ${1}: " path
-    if [ -f "$path" ]; then
-      echo "$path"
-      break
-    fi
-  done
+    while true; do
+        read -r -e -p $'\n'"Please input valid path to ${1} (format: '$dest_dir'/keys/NAME): " path_name
+        if [ -f "$dest_dir"/keys/"$path_name" ]; then
+            path="$dest_dir"/keys/"$path_name"
+            echo "$path"
+            break
+        else
+            echo -e "\nFile not exist"
+            break
+        fi
+    done
 }
 
 # Menu with a suggestion to select a service for installation
@@ -219,7 +223,7 @@ while true; do
         echo -e "tls_server_config:\n  cert_file: $cert_file\n  key_file: $key_file\n\nbasic_auth_users:\n  $username: '$(htpasswd -nbB -C 10 admin "$password" | grep -o "\$.*")'" >/etc/prometheus/web.yml
 
         # внесем изменения в конфигурационный файл /etc/prometheus/prometheus.yml в блок alerting
-        sed -r -i '/(^.*\susername:\s).*$/s//\1'"$username"'/' /etc/prometheus/prometheus.yml       # убрал 0,
+        sed -r -i '/(^.*\susername:\s).*$/s//\1'"$username"'/' /etc/prometheus/prometheus.yml
         sed -r -i '/(^.*\spassword:\s).*$/s//\1'"$password"'/' /etc/prometheus/prometheus.yml
         sed -r -i '0,/(^.*\sca_file:\s).*$/s//\1'"$cert_file"'/' /etc/prometheus/prometheus.yml
         sed -r -i "0,/(^.*\stargets:\s).*/s//\1['$domain_name:9093']/" /etc/prometheus/prometheus.yml
@@ -229,7 +233,9 @@ while true; do
 
         # Change the /etc/cloud/cloud.sap.d/95-cloud file.sap the value of the manager_etc_hosts parameter
         # from true to false to save /etc/hosts after reboot
-        sed -r -i 's/(^manage_etc_hosts:\s).*$/\1'"false"'/' /etc/cloud/cloud.cfg.d/95-cloud.cfg
+        if ! grep -Fxq "manage_etc_hosts: false" /etc/cloud/cloud.cfg.d/95-cloud.cfg &>/dev/null; then
+            sed -r -i 's/(^manage_etc_hosts:\s).*$/\1'"false"'/' /etc/cloud/cloud.cfg.d/95-cloud.cfg
+        fi
 
         # Assign the prometheus domain name to the localhost address
         if ! grep -Fxq "127.0.0.1 $domain_name" /etc/hosts &>/dev/null; then
