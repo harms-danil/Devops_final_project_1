@@ -35,8 +35,8 @@ else
         read -r -n 1 -p $'\n'"Are you ready to reinstall UrBackup? (y|n) " yn
         case $yn in
         [Yy]*)
-            systemctl stop urbackupsrv.service
-            systemctl disable urbackupsrv.service
+            systemctl stop urbackupsrv
+            systemctl disable urbackupsrv
             systemctl restart systemd-timesyncd.service
             apt purge -y urbackup-server
             apt install urbackup-server -y
@@ -62,5 +62,5 @@ echo -e "\nDONE\n"
 
 # Restart UrBackup service
 systemctl daemon-reload
-systemctl restart urbackupsrv.service
-systemctl enable urbackupsrv.service
+systemctl restart urbackupsrv
+systemctl enable urbackupsrv
