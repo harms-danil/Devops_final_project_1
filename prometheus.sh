@@ -26,7 +26,7 @@ iptables_add() {
 # Function that checks the validity of a path on a linux system
 path_request() {
     while true; do
-        read -r -e -p $'\n'"Please input valid path to ${1} (format: '$dest_dir'/keys/NAME): " path_name
+        read -r -e -p $'\n'"Please input valid path to ${1} (format: $dest_dir/keys/'NAME'): " path_name
         if [ -f "$dest_dir"/keys/"$path_name" ]; then
             path="$dest_dir"/keys/"$path_name"
             echo "$path"
@@ -275,6 +275,7 @@ while true; do
             *) echo -e "\nPlease answer Y or N!\n" ;;
             esac
         done
+        break
         ;;
     [Ss]*)
         echo -e "\n"
