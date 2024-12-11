@@ -7,6 +7,7 @@ set -e
 dest_dir="/home/harms"
 deb_name_prometheus="prometheus-harms_2.55.1.linux-amd64_all.deb"
 deb_name_alertmanager="alertmanager-harms_0.27.0.linux-amd64_all.deb"
+private_net="10.130.0.0/24"
 
 # Check if the script is running from the root user
 if [[ "${UID}" -ne 0 ]]; then
