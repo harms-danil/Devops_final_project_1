@@ -166,7 +166,7 @@ while true; do
     case $cs in
     [Cc]*)
         # Request the path to the certificate file and transfer it to the working directory of the program
-        echo -e "\nPath for certificate server"
+        echo -e "\nPath for certificate this server"
         cert_path=$(path_request certificate)
         cp "$cert_path" /etc/prometheus/
         cert_file=$(basename "$cert_path")
@@ -174,7 +174,7 @@ while true; do
         chown prometheus:prometheus /etc/prometheus/"$cert_file"
 
         # Request the path to the key file and transfer it to the working directory of the program
-        echo -e "\nPath for key server"
+        echo -e "\nPath for key this server"
         key_path=$(path_request key)
         cp "$key_path" /etc/prometheus/
         key_file=$(basename "$key_path")
