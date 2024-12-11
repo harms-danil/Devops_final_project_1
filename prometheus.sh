@@ -196,7 +196,8 @@ echo -e "\n\n====================\nDNS configuration\n====================\n"
 
 # Change the /etc/cloud/cloud.sap.d/95-cloud file.sap the value of the manager_etc_hosts parameter
 # from true to false to save /etc/hosts after reboot
-sed -r -i '0,/(^.*\smanage_etc_hosts:\s).*$/s//\1'false'/' /etc/cloud/cloud.cfg.d/95-cloud.cfg
+sed -r -i 's/(^.*\smanage_etc_hosts:\s).*$/\1'"false"'/' /etc/cloud/cloud.cfg.d/95-cloud.cfg
+#sed -r -i 's/(^manage_etc_hosts:\s).*$/\1'"false"'/' /etc/cloud/cloud.cfg.d/95-cloud.cfg
 
 # закрепим доменное имя prometheus за адресом localhost
 if ! grep -Fxq "127.0.0.1 $domain_name" /etc/hosts &>/dev/null; then
