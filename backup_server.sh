@@ -27,7 +27,7 @@ while true; do
 	case $yn in
 	[Yy]*)
 		df -h
-		read -r -p $'\n'"Enter name to disk (format: /dev/sda1)" dev_disk
+		read -r -p $'\n'"Enter the name of the disk on which the partition will be created (format: /dev/sda1)" dev_disk
 		sed -e 's/\s*\([\+0-9a-zA-Z]*\).*/\1/' << EOF | fdisk ${dev_disk}
   n # new partition
   p # primary partition
@@ -37,6 +37,7 @@ while true; do
   w # write the partition table
   q # and we're done
 EOF
+		echo -e "\nDONE\n"
 		break
 		;;
 	[Nn]*)
@@ -49,12 +50,31 @@ done
 
 # Mounting BTRFS in /backup
 echo -e "\n====================\nMounting a BTRFS format partition \n====================\n"
-mkdir /backup
-UUID=$(blkid -s UUID -o value -t TYPE=btrfs)
-if ! grep -Fxq "UUID=$UUID /backup btrfs defaults 0 0" /etc/fstab &>/dev/null; then
-          echo "UUID=$UUID /backup btrfs defaults 0 0" >>/etc/fstab
-          echo -e "\nString 'echo "UUID=$UUID /backup btrfs defaults 0 0" >> /etc/fstab' added to /etc/fstab\n\n"
-fi
+while true; do
+	read -r -n 1 -p $'\n'"Are you ready to mounting new partition? (y|n) " yn
+	case $yn in
+	[Yy]*)
+		if [ ! -d /backup ]; then
+			echo -e "\nCreate folder for backup: /backup"
+			mkdir /backup
+		else
+			echo -e "\nFolder /backup already exist"
+			exit 0
+		fi
+		UUID=$(blkid -s UUID -o value -t TYPE=btrfs)
+		if ! grep -Fxq "UUID=$UUID /backup btrfs defaults 0 0" /etc/fstab &>/dev/null; then
+          	echo "UUID=$UUID /backup btrfs defaults 0 0" >>/etc/fstab
+          	echo -e "\nString 'echo "UUID=$UUID /backup btrfs defaults 0 0" >> /etc/fstab' added to /etc/fstab\n\n"
+		fi
+		echo -e "\nDONE\n"
+		break
+		;;
+	[Nn]*)
+		break
+		;;
+	*) echo -e "\nPlease answer Y or N!\n" ;;
+    esac
+done
 
 # Add repository UrBackup server and update
 add-apt-repository ppa:uroni/urbackup
