@@ -93,7 +93,7 @@ while true; do
 		apt update -y
 
 		# Check if the program is installed UrBackup
-		if [ ! -d /etc/urbackup/ ]; then
+		if [ ! -d /etc/urbackup/ ]; then  # проверить правильность пути
 			echo -e "\n====================\nUrBackup could not be found\nInstalling...\n====================\n"
 			systemctl restart systemd-timesyncd.service
 			apt install urbackup-server -y
