@@ -44,7 +44,7 @@ while true; do
 	[Yy]*)
 		read -r -p $'\n'"Specify the size of the new disk in GiB? (y|n) " size_disk
 		dev_disk=$(fdisk -l | grep "$size_disk GiB" | awk '{print $2}' | sed 's/.$//')
-		read -r -p $'\n'"\n$dev_disk - Is the disk selected correctly? (y|n) " yn
+		read -r -p $'\n'"$dev_disk - Is the disk selected correctly? (y|n) " yn
 		case $yn in
 		[Yy]*)
 			create_disk_partition "$dev_disk"
