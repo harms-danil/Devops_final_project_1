@@ -60,6 +60,7 @@ while true; do
 			;;
 		*) echo -e "\nPlease answer Y or N!\n" ;;
 		esac
+		;;
 	[Nn]*)
 		break
 		;;
@@ -88,6 +89,7 @@ while true; do
 		fi
 		# mount dev in dir
 		mount -a
+		df -h
 		echo -e "\nDONE\n"
 		break
 		;;
@@ -105,7 +107,9 @@ while true; do
 	case $yn in
 	[Yy]*)
 		# Add repository UrBackup server and update
-		add-apt-repository ppa:uroni/urbackup
+		add-apt-repository ppa:uroni/urbackup <<EOF
+
+EOF
 		apt update -y
 
 		# Check if the program is installed UrBackup
