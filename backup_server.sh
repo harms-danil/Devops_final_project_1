@@ -4,8 +4,6 @@
 set -e
 
 # Vars
-#dest_dir="/home/harms"
-#domain_name="backup.harms-devops.ru"
 backup_dir="/backup"
 
 # Check if the script is running from the root user
@@ -102,8 +100,8 @@ while true; do
     esac
 done
 
-# Installing UrBackup
-echo -e "\n====================\nInstalling UrBackup \n====================\n"
+# Installing UrBackup server
+echo -e "\n====================\nInstalling UrBackup server \n====================\n"
 while true; do
     read -r -n 1 -p $'\n'"Are you ready to install UrBackup? (y|n) " yn
 	case $yn in
