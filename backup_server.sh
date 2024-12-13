@@ -39,7 +39,7 @@ EOF
 # Create new partition
 echo -e "\n====================\nCreate new partition\n====================\n"
 while true; do
-	read -r -n 1 -p $'\n'"Are you ready to create new partition? (y|n) " yn
+	read -r -n 1 -p $"Are you ready to create new partition? (y|n) " yn
 	case $yn in
 	[Yy]*)
 		read -r -p $'\n'"Specify the size of the new disk in GiB? (y|n) " size_disk
@@ -62,6 +62,7 @@ while true; do
 		esac
 		;;
 	[Nn]*)
+		echo -e "\n"
 		break
 		;;
 	*) echo -e "\nPlease answer Y or N!\n" ;;
@@ -94,6 +95,7 @@ while true; do
 		break
 		;;
 	[Nn]*)
+		echo -e "\n"
 		break
 		;;
 	*) echo -e "\nPlease answer Y or N!\n" ;;
