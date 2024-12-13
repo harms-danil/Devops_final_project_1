@@ -163,8 +163,8 @@ iptables_add INPUT -p tcp --dport 55414 -j ACCEPT -m comment --comment urbackup_
 iptables_add INPUT -p tcp --dport 55414 -j ACCEPT -m comment --comment urbackup_HTTP_web_interface
 iptables_add INPUT -p tcp --dport 55415 -j ACCEPT -m comment --comment urbackup_Internet_clients
 iptables_add OUTPUT -p udp --dport 35623 -j ACCEPT -m comment --comment 'urbackup UDP broadcasts for discovery'
-iptables_add INPUT -j REJECT --reject-with icmp-host-prohibited
-iptables_add FORWARD -j REJECT --reject-with icmp-host-prohibited
+#iptables_add INPUT -j REJECT --reject-with icmp-host-prohibited
+#iptables_add FORWARD -j REJECT --reject-with icmp-host-prohibited
 echo -e "\n====================\nSaving iptables config \n====================\n"
 service netfilter-persistent save
 echo -e "\nDONE\n"
