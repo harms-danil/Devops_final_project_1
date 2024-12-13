@@ -71,7 +71,6 @@ done
 # Mounting BTRFS in /backup
 echo -e "\n====================\nMounting a BTRFS format partition \n====================\n"
 while true; do
-	set -x
 	read -r -n 1 -p $'\n'"Are you ready to mounting new partition? (y|n) " yn
 	case $yn in
 	[Yy]*)
