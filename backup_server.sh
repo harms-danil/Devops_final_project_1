@@ -170,8 +170,8 @@ service netfilter-persistent save
 echo -e "\nDONE\n"
 
 # Restart UrBackup service
-systemctl daemon-reload
-systemctl restart urbackupsrv
-systemctl enable urbackupsrv
+#systemctl daemon-reload
+#systemctl restart urbackupsrv
+#systemctl enable urbackupsrv
 
 exit 0
