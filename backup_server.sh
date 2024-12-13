@@ -169,6 +169,7 @@ iptables_add OUTPUT -p udp --dport 35623 -j ACCEPT -m comment --comment 'urbacku
 #iptables_add FORWARD -j REJECT --reject-with icmp-host-prohibited
 echo -e "\n====================\nSaving iptables config \n====================\n"
 service netfilter-persistent save
+iptables -L -n -v
 echo -e "\nDONE\n"
 
 # Restart UrBackup service
