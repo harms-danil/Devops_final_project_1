@@ -175,6 +175,7 @@ echo -e "\nDONE\n"
 echo -e "\n====================\nRestart UrBackup service \n====================\n"
 
 systemctl daemon-reload
+systemctl status urbackupsrv
 #systemctl restart urbackupsrv
 #systemctl enable urbackupsrv
 
