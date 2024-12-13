@@ -3,9 +3,6 @@
 # Activate the option that interrupts script execution if any command terminates with a non-zero status
 set -e
 
-# Vars
-backup_dir="/backup"
-
 # Check if the script is running from the root user
 if [[ "${UID}" -ne 0 ]]; then
     echo -e "You need to run this script as root!"
@@ -26,13 +23,15 @@ while true; do
 	case $yn in
 	[Yy]*)
 		# Add repository UrBackup server and update
-		TF=$(mktemp) && wget "https://hndl.urbackup.org/Client/2.5.25/UrBackup%20Client%20Linux%202.5.25.sh" -O "$TF" && sudo sh "$TF";
+		TF=$(mktemp) && wget "https://hndl.urbackup.org/Client/2.5.25/UrBackup%20Client%20Linux%202.5.25.sh" -O "$TF" && sh "$TF";
 		rm -f "$TF"
-
-		apt-key adv --fetch-keys https://cpkg.datto.com/DATTO-PKGS-GPG-KEY
-		echo "deb [arch=amd64] https://cpkg.datto.com/datto-deb/public/$(lsb_release -sc) $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/datto-linux-agent.list
-		apt update -y
-		apt install dattobd-dkms dattobd-utils
+		# install dattobd
+		if [ ! -d /usr/src/dattobd-0.11.8/dattobd.h ]; then
+			apt-key adv --fetch-keys https://cpkg.datto.com/DATTO-PKGS-GPG-KEY
+			echo "deb [arch=amd64] https://cpkg.datto.com/datto-deb/public/$(lsb_release -sc) $(lsb_release -sc) main" | tee /etc/apt/sources.list.d/datto-linux-agent.list
+			apt update -y
+			apt install dattobd-dkms dattobd-utils
+		fi
 		break
 		;;
 	[Nn]*)
@@ -51,21 +50,9 @@ iptables_add INPUT -p tcp --dport 35621 -j ACCEPT -m comment --comment 'urbackup
 iptables_add INPUT -p tcp --dport 35622 -j ACCEPT -m comment --comment 'urbackup UDP broadcasts for discovery'
 iptables_add INPUT -p tcp --dport 35623 -j ACCEPT -m comment --comment 'urbackup Commands and image backups'
 
-#iptables_add INPUT -p tcp --dport 55414 -j ACCEPT -m comment --comment 'urbackup FastCGI for web interface'
-#iptables_add INPUT -p tcp --dport 55414 -j ACCEPT -m comment --comment 'urbackup HTTP web interface'
-#iptables_add INPUT -p tcp --dport 55415 -j ACCEPT -m comment --comment 'urbackup Internet clients'
-#iptables_add OUTPUT -p udp --dport 35623 -j ACCEPT -m comment --comment 'urbackup UDP broadcasts for discovery'
-#iptables_add INPUT -j REJECT --reject-with icmp-host-prohibited
-#iptables_add FORWARD -j REJECT --reject-with icmp-host-prohibited
 echo -e "\n====================\nSaving iptables config \n====================\n"
 service netfilter-persistent save
 iptables -L -n -v
 echo -e "\nDONE\n"
-
-# Restart UrBackup service
-#echo -e "\n====================\nRestart UrBackup service \n====================\n"
-#
-#systemctl daemon-reload
-#systemctl restart urbackupsrv
 
 exit 0
