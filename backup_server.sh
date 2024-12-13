@@ -21,34 +21,51 @@ iptables_add() {
     fi
 }
 
+create_disk_partition() {
+	sed -e 's/\s*\([\+0-9a-zA-Z]*\).*/\1/' << EOF | fdisk "$1"
+  n # new partition
+  p # primary partition
+  1 # partition number 1
+    # default - start at beginning of disk
+    # default, extend partition to end of disk
+  t # recognize specified partition table type only
+  83 # linux
+  w # write the partition table
+EOF
+	device_disk=$(fdisk -l | grep "$size_disk"G | awk '{print $1}')
+	mkfs.btrfs "$device_disk"
+}
+
 # Create new partition
 echo -e "\n====================\nCreate new partition\n====================\n"
 while true; do
 	read -r -n 1 -p $'\n'"Are you ready to create new partition? (y|n) " yn
 	case $yn in
 	[Yy]*)
-		df -h
-		read -r -p $'\n'"Enter the name of the disk on which the partition will be created (format: /dev/sda1)" dev_disk
-		sed -e 's/\s*\([\+0-9a-zA-Z]*\).*/\1/' << EOF | fdisk "$dev_disk"
-  n # new partition
-  p # primary partition
-  1 # partition number 1
-    # default - start at beginning of disk
-    # default, extend partition to end of disk
-  w # write the partition table
-  q # and we're done
-EOF
-		mkfs.btrfs "$dev_disk"1
-		echo -e "\nDONE\n"
-		break
-		;;
+		read -r -p $'\n'"Specify the size of the new disk in GiB? (y|n) " size_disk
+		dev_disk=$(fdisk -l | grep "$size_disk GiB" | awk '{print $2}' | sed 's/.$//')
+		echo -e "\n$dev_disk - Is the disk selected correctly? (y|n) " yn
+		case $yn in
+		[Yy]*)
+			create_disk_partition "$dev_disk"
+			echo -e "\nDONE\n"
+			break
+			;;
+		[Nn]*)
+			fdisk -l | grep	"$size_disk GiB"
+			read -r -p $'\n'"Enter the name of the disk on which the partition will be created (format: /dev/vdb)" dev_disk
+			create_disk_partition "$dev_disk"
+			echo -e "\nDONE\n"
+			break
+			;;
+		*) echo -e "\nPlease answer Y or N!\n" ;;
+		esac
 	[Nn]*)
 		break
 		;;
 	*) echo -e "\nPlease answer Y or N!\n" ;;
     esac
 done
-
 
 # Mounting BTRFS in /backup
 echo -e "\n====================\nMounting a BTRFS format partition \n====================\n"
@@ -62,13 +79,12 @@ while true; do
 			mkdir "$backup_dir"
 		else
 			echo -e "\nFolder $backup_dir already exist"
-			exit 0
 		fi
 		# add string in /etc/fstab
 		UUID=$(blkid -s UUID -o value -t TYPE=btrfs)
 		if ! grep -Fxq "UUID=$UUID /backup btrfs defaults 0 0" /etc/fstab &>/dev/null; then
           	echo "UUID=$UUID /backup btrfs defaults 0 0" >>/etc/fstab
-          	echo -e "\nString 'echo "UUID=$UUID $backup_dir btrfs defaults 0 0" >> /etc/fstab' added to /etc/fstab\n\n"
+          	echo -e "\nString 'UUID=$UUID $backup_dir btrfs defaults 0 0' added to /etc/fstab\n\n"
 		fi
 		# mount dev in dir
 		mount -a
