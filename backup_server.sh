@@ -161,9 +161,9 @@ set -x
 #iptables_add INPUT -p tcp --dport 35622 -j ACCEPT -m comment --comment 'urbackup UDP broadcasts for discovery'
 #iptables_add INPUT -p tcp --dport 35623 -j ACCEPT -m comment --comment 'urbackup Commands and image backups'
 
-iptables_add INPUT -p tcp --dport 55414 -j ACCEPT -m comment --comment urbackup_FastCGI_for_web_interface
-iptables_add INPUT -p tcp --dport 55414 -j ACCEPT -m comment --comment urbackup_HTTP_web_interface
-iptables_add INPUT -p tcp --dport 55415 -j ACCEPT -m comment --comment urbackup_Internet_clients
+iptables_add INPUT -p tcp --dport 55414 -j ACCEPT -m comment --comment 'urbackup FastCGI for web interface'
+iptables_add INPUT -p tcp --dport 55414 -j ACCEPT -m comment --comment 'urbackup HTTP web interface'
+iptables_add INPUT -p tcp --dport 55415 -j ACCEPT -m comment --comment 'urbackup Internet clients'
 iptables_add OUTPUT -p udp --dport 35623 -j ACCEPT -m comment --comment 'urbackup UDP broadcasts for discovery'
 iptables_add INPUT -j REJECT --reject-with icmp-host-prohibited
 iptables_add FORWARD -j REJECT --reject-with icmp-host-prohibited
