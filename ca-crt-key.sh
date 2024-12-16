@@ -83,7 +83,7 @@ while true; do
 	5)
 	echo -e "\n====================\nCopy server certificate to monitoring server\n===================="
 	echo -e "\n====================\nCopy $server_name.crt\n====================\n"
-	scp -P $port "$dest_dir"/easy-rsa/pki/issued/"$server_name".crt "$username@monitor.$hostname":~/keys
+	scp -P $port "$dest_dir"/easy-rsa/pki/issued/"$server_name".crt "$username"@monitor."$host":~/keys
 	echo -e "\nDONE\n"
 	break
 	;;
