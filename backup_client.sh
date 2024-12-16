@@ -44,7 +44,6 @@ done
 
 # Set up iptables
 echo -e "\n====================\nIptables configuration \n====================\n"
-set -x
 # setting iptables for client
 iptables_add INPUT -p tcp --dport 35621 -j ACCEPT -m comment --comment 'urbackup Sending files during file backups (file server)'
 iptables_add INPUT -p tcp --dport 35622 -j ACCEPT -m comment --comment 'urbackup UDP broadcasts for discovery'
