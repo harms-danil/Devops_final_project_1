@@ -22,7 +22,7 @@ while true; do
     read -r -n 1 -p $'\n'"Are you ready to install UrBackup client? (y|n) " yn
 	case $yn in
 	[Yy]*)
-		# Add repository UrBackup server and update
+		# Install UrBackup Client
 		TF=$(mktemp) && wget "https://hndl.urbackup.org/Client/2.5.25/UrBackup%20Client%20Linux%202.5.25.sh" -O "$TF" && sh "$TF";
 		rm -f "$TF"
 		# install dattobd
@@ -51,7 +51,7 @@ iptables_add INPUT -p tcp --dport 35623 -j ACCEPT -m comment --comment 'urbackup
 
 echo -e "\n====================\nSaving iptables config \n====================\n"
 service netfilter-persistent save
-iptables -L -n -v
+iptables -L -n -v --line-number
 echo -e "\nDONE\n"
 
 exit 0
