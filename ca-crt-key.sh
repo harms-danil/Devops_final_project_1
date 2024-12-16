@@ -22,19 +22,17 @@ while true; do
     read -r -n 1 -p $'\n'"Continue or Skip (c|s) " cs
     case $cs in
         [Cc]*)
-            if [ ! -f "$dest_dir"/easy-rsa/pki/private/"$server_name".key ]; then
-                cd $dest_dir/easy-rsa
-                ./easyrsa gen-req "$server_name" nopass
-                if [ ! -f $dest_dir/easy-rsa/pki/issued/"$server_name".crt ]; then
-                    ./easyrsa sign-req server "$server_name"
-                else
-                    echo -e "\nFile $dest_dir/easy-rsa/pki/issued/$server_name found!\nNeed remove him..."
-                    exit 1
-                fi
-            else
-                echo -e "\nFile $dest_dir/easy-rsa/pki/private/$server_name found!\nNeed remove him..."
-                exit 1
-            fi
+            if [ -f "$dest_dir"/easy-rsa/pki/private/"$server_name".key ]; then
+            	echo -e "\nFile $dest_dir/easy-rsa/pki/issued/$server_name found!\nDeleting it..."
+				rm -rf "$dest_dir"/easy-rsa/pki/private/"$server_name".key
+			fi
+			if [ -f $dest_dir/easy-rsa/pki/issued/"$server_name".crt ]; then
+				echo -e "\nFile $dest_dir/easy-rsa/pki/private/$server_name found!\nDeleting it..."
+				rm -rf $dest_dir/easy-rsa/pki/issued/"$server_name".crt
+			fi
+			cd $dest_dir/easy-rsa
+        	./easyrsa gen-req "$server_name" nopass
+            ./easyrsa sign-req server "$server_name"
             # remove req
             rm $dest_dir/easy-rsa/pki/reqs/"$server_name.req"
             echo -e "\nDONE"
