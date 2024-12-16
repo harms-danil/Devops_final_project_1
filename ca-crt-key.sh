@@ -25,7 +25,7 @@ while true; do
     echo -e "[4] Copy client certificate and key\n"
     echo -e "[5] Exit\n"
     echo -e "--------------------------\n"
-    read -r -n 1 -p "Select exporter for install: " certificate
+    read -r -n 1 -p "Select an action: " certificate
 
     case $certificate in
 	# Create pair crt and key
