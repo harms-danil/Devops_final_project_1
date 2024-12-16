@@ -23,6 +23,7 @@ while true; do
     echo -e "[2] Copy ca.srt\n"
     echo -e "[3] Copy server certificate and key\n"
     echo -e "[4] Copy client certificate and key\n"
+    echo -e "[4] Copy server certificate to monitoring server\n"
     echo -e "[5] Exit\n"
     echo -e "--------------------------\n"
     read -r -n 1 -p "Select an action: " certificate
@@ -78,8 +79,17 @@ while true; do
 	break
 	;;
 
+	# Copy server certificate to monitoring server
+	5)
+	echo -e "\n====================\nCopy server certificate to monitoring server\n===================="
+	echo -e "\n====================\nCopy $server_name.crt\n====================\n"
+	scp -P $port "$dest_dir"/easy-rsa/pki/issued/"$server_name".crt "$username@monitor.$hostname":~/keys
+	echo -e "\nDONE\n"
+	break
+	;;
+
 	# exit
-	5) echo -e "\n"
+	6) echo -e "\n"
 		break
 		;;
 	esac
