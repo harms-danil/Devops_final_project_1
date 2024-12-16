@@ -9,20 +9,6 @@ host="harms-devops.ru"
 dest_dir="/home/harms"
 username="harms"
 
-# Request the path of the future location of the easy-rsa working directory
-#while true; do
-#    read -r -e -p $'\n'"Path for easy-rsa location (format: /home/username): " dest_dir
-#    if [[ "$dest_dir" == */ ]]; then
-#       echo -e "\nWrong path format!\n"
-#    else
-#        if [ ! -d "$dest_dir" ]; then
-#            echo -e "\nDirectory $dest_dir doesn't exist!\n"
-#        else
-#            break
-#        fi
-#    fi
-#done
-
 # Request the server part where to copy the keys and certificate
 read -r -e -p "Enter the SUB_name server for path (format: username@'SUB'.hostname): " sub_name
 server_path_ssh="$username@$sub_name.$host"
