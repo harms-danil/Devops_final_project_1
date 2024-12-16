@@ -78,9 +78,6 @@ while true; do
                     apt purge -y node-exporter-harms || rm -rf /opt/node_exporter/
                     wget -P $dest_dir/ https://github.com/harms-danil/Devops_final_project_1/raw/refs/heads/main/deb/"$deb_name_node"
                     dpkg -i "$deb_name_node"
-#                    if [ ! -d /opt/node_exporter/ ]; then
-#                        mkdir /opt/node_exporter/
-#                    fi
                     rm "$deb_name_node"
                     echo -e "\nDONE\n"
                     break
