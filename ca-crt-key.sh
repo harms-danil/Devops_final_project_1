@@ -134,4 +134,3 @@ while true; do
 		;;
 	esac
 done
-echo -e "\nDONE"
