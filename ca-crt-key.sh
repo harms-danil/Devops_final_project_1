@@ -132,5 +132,6 @@ while true; do
 	5) echo -e "\n"
 		break
 		;;
-esac
+	esac
+done
 echo -e "\nDONE"
