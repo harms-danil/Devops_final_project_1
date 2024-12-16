@@ -23,8 +23,8 @@ while true; do
     echo -e "[2] Copy ca.srt\n"
     echo -e "[3] Copy server certificate and key\n"
     echo -e "[4] Copy client certificate and key\n"
-    echo -e "[4] Copy server certificate to monitoring server\n"
-    echo -e "[5] Exit\n"
+    echo -e "[5] Copy server certificate to monitoring server\n"
+    echo -e "[6] Exit\n"
     echo -e "--------------------------\n"
     read -r -n 1 -p "Select an action: " certificate
 
