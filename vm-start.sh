@@ -70,7 +70,7 @@ echo -e "\nDONE\n"
 apt update && apt upgrade -y
 command_check wget "Wget" wget
 command_check iptables "Iptables" iptables
-command_check netfilter-persistent "Netfilter-persistent" netfilter-persistent
+command_check netfilter-persistent "Netfilter-persistent" iptables-persistent
 command_check openssl "OpenSSL" openssl
 command_check update-ca-certificates "Ca-certificates" ca-certificates
 command_check basename "Basename" coreutils
@@ -243,8 +243,8 @@ while true; do
             iptables_add INPUT -p tcp --dport $port -j ACCEPT -m comment --comment ssh_input
             iptables_add OUTPUT -p tcp --dport $port -j ACCEPT -m comment --comment ssh_output
             # OUTPUT Backup
-            iptables_add INPUT -p tcp --dport 55414 -j ACCEPT -m comment --comment backup-server_input
-            iptables_add OUTPUT -p tcp --dport 55414 -j ACCEPT -m comment --comment backup-server_output
+            #iptables_add INPUT -p tcp --dport 55414 -j ACCEPT -m comment --comment backup-server_input
+            #iptables_add OUTPUT -p tcp --dport 55414 -j ACCEPT -m comment --comment backup-server_output
             # OUTPUT HTTP 
             iptables_add OUTPUT -p tcp -m multiport --dports 443,80 -j ACCEPT
             # ESTABLISHED

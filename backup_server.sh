@@ -167,7 +167,7 @@ iptables_add INPUT -j REJECT --reject-with icmp-host-prohibited
 iptables_add FORWARD -j REJECT --reject-with icmp-host-prohibited
 echo -e "\n====================\nSaving iptables config \n====================\n"
 service netfilter-persistent save
-iptables -L -n -v
+iptables -L -n -v --line-number
 echo -e "\nDONE\n"
 
 # Restart UrBackup service
