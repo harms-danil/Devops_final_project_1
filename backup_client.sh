@@ -56,7 +56,7 @@ while true; do
 	read -r -n 1 -p $'\n\n'"Add new path? (y|n) " yn
 		case $yn in
 		[Yy]*)
-			read -r -n 1 -p $'\n'"Enter path for backup files: " file_path
+			read -r -p $'\n'"Enter path for backup files: " file_path
 			urbackupclientctl add-backupdir -d "$file_path"
 			;;
 		[Nn]*)
