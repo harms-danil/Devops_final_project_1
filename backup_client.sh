@@ -33,6 +33,7 @@ while true; do
 				read -r -n 1 -p $'\n'"Are you ready to reinstall UrBackup? (y|n) " yn
 				case $yn in
 				[Yy]*)
+					echo -e "\n"
 					uninstall_urbackupclient
 					TF=$(mktemp) && wget "https://hndl.urbackup.org/Client/2.5.25/UrBackup%20Client%20Linux%202.5.25.sh" -O "$TF" && sh
 					"$TF"; rm -f "$TF"
