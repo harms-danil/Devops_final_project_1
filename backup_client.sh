@@ -47,6 +47,23 @@ if ! grep -Fxq "INTERNET_ONLY=false" /etc/default/urbackupclient &>/dev/null; th
 	sed -r -i 's/(^INTERNET_ONLY=\s).*$/\1'"false"'/' /etc/default/urbackupclient
 fi
 
+# Add folder for backup
+echo -e "\n====================\nAdd folder for backup \n====================\n"
+while true; do
+	read -r -n 1 -p $'\n\n'"Add new path? (y|n) " yn
+		case $yn in
+		[Yy]*)
+			read -r -n 1 -p $'\n'"Enter path for backup files: " file_path
+			urbackupclientctl add-backupdir -d "$file_path"
+			;;
+		[Nn]*)
+			echo -e "\n"
+			break
+			;;
+		*) echo -e "\nPlease answer Y or N!\n" ;;
+		esac
+done
+
 # Set up iptables
 echo -e "\n====================\nIptables configuration \n====================\n"
 # setting iptables for client
