@@ -42,6 +42,11 @@ while true; do
 	esac
 done
 
+# Setting urbackupclient config file
+if ! grep -Fxq "INTERNET_ONLY=false" /etc/default/urbackupclient &>/dev/null; then
+	sed -r -i 's/(^INTERNET_ONLY=\s).*$/\1'"false"'/' /etc/default/urbackupclient
+fi
+
 # Set up iptables
 echo -e "\n====================\nIptables configuration \n====================\n"
 # setting iptables for client
