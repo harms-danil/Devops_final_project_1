@@ -92,11 +92,12 @@ fi
 # Add folder for backup
 echo -e "\n====================\nAdd folder for backup \n====================\n"
 while true; do
-	read -r -n 1 -p $'\n\n'"Add new path for backup? (y|n) " yn
+	read -r -n 1 -p $'\n'"Add new path for backup? (y|n) " yn
 		case $yn in
 		[Yy]*)
 			read -r -p $'\n'"Enter path for backup files: " file_path
 			urbackupclientctl add-backupdir -d "$file_path"
+			echo -e "\nDONE"
 			;;
 		[Nn]*)
 			echo -e "\n"
@@ -112,10 +113,10 @@ echo -e "\n====================\nIptables configuration \n====================\n
 iptables_add INPUT -p tcp --dport 35621 -j ACCEPT -m comment --comment 'urbackup Sending files during file backups (file server)'
 iptables_add INPUT -p udp --dport 35622 -j ACCEPT -m comment --comment 'urbackup UDP broadcasts for discovery'
 iptables_add INPUT -p tcp --dport 35623 -j ACCEPT -m comment --comment 'urbackup Commands and image backups'
+echo -e "\nDONE"
 
 echo -e "\n====================\nSaving iptables config \n====================\n"
 service netfilter-persistent save
-iptables -L -n -v --line-number
 echo -e "\nDONE\n"
 
 exit 0
