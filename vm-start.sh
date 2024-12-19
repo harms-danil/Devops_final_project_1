@@ -244,7 +244,7 @@ while true; do
             iptables_add OUTPUT -p tcp --dport $port -j ACCEPT -m comment --comment ssh_output
             # OUTPUT Backup
             #iptables_add INPUT -p tcp --dport 55414 -j ACCEPT -m comment --comment backup-server_input
-            #iptables_add OUTPUT -p tcp --dport 55414 -j ACCEPT -m comment --comment backup-server_output
+            iptables_add OUTPUT -p tcp --dport 55414 -j ACCEPT -m comment --comment backup-server_output
             # OUTPUT HTTP 
             iptables_add OUTPUT -p tcp -m multiport --dports 443,80 -j ACCEPT
             # ESTABLISHED
