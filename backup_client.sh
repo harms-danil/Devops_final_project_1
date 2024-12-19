@@ -35,6 +35,7 @@ while true; do
 				[Yy]*)
 					echo -e "\n"
 					uninstall_urbackupclient
+					echo -e "\nDONE"
 					TF=$(mktemp) && wget "https://hndl.urbackup.org/Client/2.5.25/UrBackup%20Client%20Linux%202.5.25.sh" -O "$TF" && sh
 					"$TF"; rm -f "$TF"
 					echo -e "\nDONE\n"
@@ -57,30 +58,30 @@ while true; do
 	esac
 done
 
-# install dattobd
-echo -e "\n====================\nInstalling dattobd\n====================\n"
-while true; do
-	read -r -n 1 -p $'\n'"Are you ready to install dattobd? (y|n) " yn
-	case $yn in
-	[Yy]*)
-		if [ ! -d /sys/module/dattobd ]; then
-			echo -e "\n====================\nUrBackup dattodb not be found\nInstalling...\n====================\n"
-			apt-key adv --fetch-keys https://cpkg.datto.com/DATTO-PKGS-GPG-KEY
-			echo "deb [arch=amd64] https://cpkg.datto.com/datto-deb/public/$(lsb_release -sc) $(lsb_release -sc) main" | tee /etc/apt/sources.list.d/datto-linux-agent.list
-			apt update -y
-			apt install dattobd-dkms dattobd-utils
-		else
-			echo -e "Dattobd already installing!!!"
-		fi
-		break
-		;;
-	[Nn]*)
-		echo -e "\n"
-		break
-		;;
-	*) echo -e "\nPlease answer Y or N!\n" ;;
-	esac
-done
+## install dattobd
+#echo -e "\n====================\nInstalling dattobd\n====================\n"
+#while true; do
+#	read -r -n 1 -p $'\n'"Are you ready to install dattobd? (y|n) " yn
+#	case $yn in
+#	[Yy]*)
+#		if [ ! -d /sys/module/dattobd ]; then
+#			echo -e "\n====================\nUrBackup dattodb not be found\nInstalling...\n====================\n"
+#			apt-key adv --fetch-keys https://cpkg.datto.com/DATTO-PKGS-GPG-KEY
+#			echo "deb [arch=amd64] https://cpkg.datto.com/datto-deb/public/$(lsb_release -sc) $(lsb_release -sc) main" | tee /etc/apt/sources.list.d/datto-linux-agent.list
+#			apt update -y
+#			apt install dattobd-dkms dattobd-utils
+#		else
+#			echo -e "Dattobd already installing!!!"
+#		fi
+#		break
+#		;;
+#	[Nn]*)
+#		echo -e "\n"
+#		break
+#		;;
+#	*) echo -e "\nPlease answer Y or N!\n" ;;
+#	esac
+#done
 
 # Setting urbackup client config file
 echo -e "\n====================\nSetting urbackup client config file \n====================\n"
