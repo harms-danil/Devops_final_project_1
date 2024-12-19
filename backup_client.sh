@@ -19,21 +19,32 @@ iptables_add() {
 # Installing UrBackup client
 echo -e "\n====================\nInstalling UrBackup client \n====================\n"
 while true; do
-    read -r -n 1 -p $'\n'"Are you ready to install UrBackup client? (y|n) " yn
+	read -r -n 1 -p $'\n'"Are you ready to install UrBackup client? (y|n) " yn
 	case $yn in
 	[Yy]*)
-		# Uninstall urbackup client
-#		uninstall_urbackupclient
-
-		# Install UrBackup Client
-		TF=$(mktemp) && wget "https://hndl.urbackup.org/Client/2.5.25/UrBackup%20Client%20Linux%202.5.25.sh" -O "$TF" && sh "$TF";
-		rm -f "$TF"
-		# install dattobd
-		if [ ! -d /usr/src/dattobd-0.11.8/dattobd.h ]; then
-			apt-key adv --fetch-keys https://cpkg.datto.com/DATTO-PKGS-GPG-KEY
-			echo "deb [arch=amd64] https://cpkg.datto.com/datto-deb/public/$(lsb_release -sc) $(lsb_release -sc) main" | tee /etc/apt/sources.list.d/datto-linux-agent.list
-			apt update -y
-			apt install dattobd-dkms dattobd-utils
+		if [ ! -d /usr/local/etc/urbackup ]; then
+			echo -e "\n====================\nUrBackup Client could not be found\nInstalling...\n====================\n"
+			# Install UrBackup Client
+			TF=$(mktemp) && wget "https://hndl.urbackup.org/Client/2.5.25/UrBackup%20Client%20Linux%202.5.25.sh" -O "$TF" && sh "$TF";
+			rm -f "$TF"
+		else
+			echo -e "\n====================\nUrBackup Client found!!!\nreInstalling...\n====================\n"
+			while true; do
+				read -r -n 1 -p $'\n'"Are you ready to reinstall UrBackup? (y|n) " yn
+				case $yn in
+				[Yy]*)
+					uninstall_urbackupclient
+					TF=$(mktemp) && wget "https://hndl.urbackup.org/Client/2.5.25/UrBackup%20Client%20Linux%202.5.25.sh" -O "$TF" && sh
+					"$TF"; rm -f "$TF"
+					echo -e "\nDONE\n"
+					break
+					;;
+				[Nn]*)
+					break
+					;;
+				*) echo -e "\nPlease answer Y or N!\n" ;;
+				esac
+			done
 		fi
 		break
 		;;
@@ -45,15 +56,42 @@ while true; do
 	esac
 done
 
-# Setting urbackupclient config file
+# install dattobd
+echo -e "\n====================\nInstalling dattobd\n====================\n"
+while true; do
+	read -r -n 1 -p $'\n'"Are you ready to install dattobd? (y|n) " yn
+	case $yn in
+	[Yy]*)
+		if [ ! -d /usr/src/dattobd-0.11.8/dattobd.h ]; then
+			echo -e "\n====================\nUrBackup dattodb not be found\nInstalling...\n====================\n"
+			apt-key adv --fetch-keys https://cpkg.datto.com/DATTO-PKGS-GPG-KEY
+			echo "deb [arch=amd64] https://cpkg.datto.com/datto-deb/public/$(lsb_release -sc) $(lsb_release -sc) main" | tee /etc/apt/sources.list.d/datto-linux-agent.list
+			apt update -y
+			apt install dattobd-dkms dattobd-utils
+		else
+			echo -e "Dattobd already installing!!!"
+		fi
+		break
+		;;
+	[Nn]*)
+		echo -e "\n"
+		break
+		;;
+	*) echo -e "\nPlease answer Y or N!\n" ;;
+	esac
+done
+
+# Setting urbackup client config file
+echo -e "\n====================\nSetting urbackup client config file \n====================\n"
 if ! grep -Fxq "INTERNET_ONLY=false" /etc/default/urbackupclient &>/dev/null; then
 	sed -r -i 's/(^INTERNET_ONLY=\s).*$/\1'"false"'/' /etc/default/urbackupclient
+	echo "\nDONE"
 fi
 
 # Add folder for backup
 echo -e "\n====================\nAdd folder for backup \n====================\n"
 while true; do
-	read -r -n 1 -p $'\n\n'"Add new path? (y|n) " yn
+	read -r -n 1 -p $'\n\n'"Add new path for backup? (y|n) " yn
 		case $yn in
 		[Yy]*)
 			read -r -p $'\n'"Enter path for backup files: " file_path

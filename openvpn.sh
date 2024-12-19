@@ -64,6 +64,7 @@ if [ ! -d /etc/openvpn/ ]; then
     echo -e "\nDONE\n"
 else
     while true; do
+    	echo -e "\n====================\nOpenVPN found!!!\nreInstalling...\n====================\n"
         read -r -n 1 -p $'\n'"Are you ready to reinstall easy-rsa? (y|n) " yn
         case $yn in
         [Yy]*)

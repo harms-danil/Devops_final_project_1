@@ -61,6 +61,7 @@ while true; do
             rm -f "$deb_name_prometheus"
             echo -e "\nDONE\n"
         else
+        	echo -e "\n====================\nPrometheus found!!!\nreInstalling...\n====================\n"
             while true; do
                 read -r -n 1 -p $'\n'"Are you ready to reinstall Prometheus (y|n) "$'\n' yn
                 case $yn in
