@@ -23,7 +23,7 @@ while true; do
 	case $yn in
 	[Yy]*)
 		# Uninstall urbackup client
-		uninstall_urbackupclient
+#		uninstall_urbackupclient
 
 		# Install UrBackup Client
 		TF=$(mktemp) && wget "https://hndl.urbackup.org/Client/2.5.25/UrBackup%20Client%20Linux%202.5.25.sh" -O "$TF" && sh "$TF";
