@@ -151,31 +151,6 @@ EOF
 	esac
 done
 
-# install dattobd
-echo -e "\n====================\nInstalling dattobd\n====================\n"
-while true; do
-	read -r -n 1 -p $'\n'"Are you ready to install dattobd? (y|n) " yn
-	case $yn in
-	[Yy]*)
-		if [ ! -d /sys/module/dattobd ]; then
-			echo -e "\n====================\nUrBackup dattodb not be found\nInstalling...\n====================\n"
-			apt-key adv --fetch-keys https://cpkg.datto.com/DATTO-PKGS-GPG-KEY
-			echo "deb [arch=amd64] https://cpkg.datto.com/datto-deb/public/$(lsb_release -sc) $(lsb_release -sc) main" | tee /etc/apt/sources.list.d/datto-linux-agent.list
-			apt update -y
-			apt install dattobd-dkms dattobd-utils
-		else
-			echo -e "Dattobd already installing!!!"
-		fi
-		break
-		;;
-	[Nn]*)
-		echo -e "\n"
-		break
-		;;
-	*) echo -e "\nPlease answer Y or N!\n" ;;
-	esac
-done
-
 # Set up iptables
 echo -e "\n====================\nIptables configuration \n====================\n"
 set -x
