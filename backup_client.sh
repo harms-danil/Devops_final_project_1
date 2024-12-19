@@ -117,6 +117,6 @@ echo -e "\nDONE"
 
 echo -e "\n====================\nSaving iptables config \n====================\n"
 service netfilter-persistent save
-echo -e "\nDONE\n"
+echo -e "\nDONE, the script was executed successfully\n"
 
 exit 0
