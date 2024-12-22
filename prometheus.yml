@@ -64,7 +64,7 @@ scrape_configs:
       username: admin
       password: password
     tls_config:
-      ca_file: vpn.harms-devops.ru.crt
+      ca_file: openvpn.harms-devops.ru.crt
     scrape_interval: 5s
     scrape_timeout: 5s
     static_configs:

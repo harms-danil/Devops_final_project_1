@@ -40,8 +40,7 @@ else
         read -r -n 1 -p $'\n'"Are you ready to reinstall easy-rsa? (y|n) " yn
         case $yn in
         [Yy]*)
-            apt purge -y easy-rsa
-            apt purge -y easy-rsa-harms
+            apt purge -y easy-rsa || apt purge -y easy-rsa-harms
             wget -P $dest_dir/ https://github.com/harms-danil/Devops_final_project_1/raw/refs/heads/main/deb/"$deb_name"
             dpkg -i "$deb_name"
             echo -e "\nDONE\n"
@@ -88,6 +87,12 @@ while true; do
     *) echo -e "\nPlease answer Y or N!\n" ;;
     esac
 done
+
+#а) Для DEB (Ubuntu / Astra Linux / Debian).
+#
+#Помещаем корневой сертификат в каталог /usr/local/share/ca-certificates/ и выполняем команду:
+#
+#update-ca-certificates
 
 # Delete deb-package
 rm "$dest_dir"/"$deb_name"

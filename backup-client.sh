@@ -35,7 +35,7 @@ while true; do
 				[Yy]*)
 					echo -e "\n"
 					uninstall_urbackupclient
-					echo -e "\nDONE"
+					echo -e "\nDONE\n"
 					TF=$(mktemp) && wget "https://hndl.urbackup.org/Client/2.5.25/UrBackup%20Client%20Linux%202.5.25.sh" -O "$TF" && sh
 					"$TF"; rm -f "$TF"
 					echo -e "\nDONE\n"
