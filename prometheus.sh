@@ -7,7 +7,7 @@ set -e
 dest_dir="/home/harms"
 deb_name_prometheus="prometheus-harms_2.55.1.linux-amd64_all.deb"
 deb_name_alertmanager="alertmanager-harms_0.27.0.linux-amd64_all.deb"
-private_net="10.130.0.0/24"
+#private_net="10.130.0.0/24"
 domain_name="monitor.harms-devops.ru"
 
 # Check if the script is running from the root user
@@ -40,7 +40,7 @@ path_request() {
 
 # Menu with a suggestion to select a service for installation
 while true; do
-    echo -e "\n====================\nSelect a service for installation\n====================\n"
+    echo -e "\nSelect a service for installation...\n"
     echo -e "\n--------------------------\n"
     echo -e "[1] Prometheus\n"
     echo -e "[2] Alertmanager\n"
@@ -125,7 +125,7 @@ while true; do
 done
 
 # Request the address of the private network and check it for correctness
-echo -e "\n====================\nChange the address of the private network ($private_net)\n====================\n"
+echo -e "\n====================\nChange the address of the private network\n====================\n"
 while true; do
     read -r -n 1 -p "Continue or Skip? (c|s) " cs
     case $cs in

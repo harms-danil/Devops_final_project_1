@@ -13,21 +13,6 @@ if [[ "${UID}" -ne 0 ]]; then
     exit 1
 fi
 
-# If need, uncomment
-# Request the path of the future location of the easy-rsa working directory
-#while true; do
-#  read -r -e -p $'\n'"Path for easy-rsa location (format: /home/username): " dest_dir
-#  if [[ "$dest_dir" == */ ]]; then
-#    echo -e "\nWrong path format!\n"
-#  else
-#    if [ ! -d "$dest_dir" ]; then
-#      echo -e "\nDirectory $dest_dir doesn't exist!\n"
-#    else
-#      break
-#    fi
-#  fi
-#done
-
 # Check if the program is installed Easy-RSA
 if [ ! -d /usr/share/easy-rsa/ ]; then
     echo -e "\n====================\nEasy-rsa could not be found\nInstalling...\n====================\n"
