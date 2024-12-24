@@ -11,10 +11,6 @@ file_bashrc="/home/$SUDO_USER/.bashrc"
 port="1985"
 #completion="\n====================\n"
 
-#echo 'export DEBEMAIL="harmsss@yandex.ru"' >> ~/.bashrc
-#echo 'export DEBFULLNAME="Harms"' >> ~/.bashrc
-#source ~/.bashrc
-
 # Check if the script is running from the root user
 if [[ "${UID}" -ne 0 ]]; then
     echo -e "You need to run script as root!\nPlease apply 'sudo' and add your host-key to $file_ssh_keys before run this script!"
