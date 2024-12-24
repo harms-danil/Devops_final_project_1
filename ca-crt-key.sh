@@ -11,7 +11,7 @@ username="harms"
 
 # Request the server part where to copy the keys and certificate
 sub_name_request() {
-	read -r -e -p "\nEnter the SUB_name server for path (format: username@'SUB'.hostname): " sub_name
+	read -r -e -p $'\n'"Enter the SUB_name server for path (format: username@'SUB'.hostname): " sub_name
 	server_path_ssh="$username@$sub_name.$host"
 	server_name="$sub_name.$host"
 	echo -e "\n$server_name"
