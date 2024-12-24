@@ -15,7 +15,6 @@ sub_name_request() {
 	server_path_ssh="$username@$sub_name.$host"
 	server_name="$sub_name.$host"
 	echo -e "\n$server_name"
-	echo -e "\n$server_path_ssh"
 }
 
 # Select actions with certificates and keys menu
