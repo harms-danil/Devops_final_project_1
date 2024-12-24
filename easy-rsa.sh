@@ -88,10 +88,8 @@ while true; do
     esac
 done
 
-#а) Для DEB (Ubuntu / Astra Linux / Debian).
-#
 #Помещаем корневой сертификат в каталог /usr/local/share/ca-certificates/ и выполняем команду:
-#
+#cp $dest_dir"/easy-rsa/pki/ca.crt /usr/local/share/ca-certificates/
 #update-ca-certificates
 
 # Delete deb-package

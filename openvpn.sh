@@ -129,7 +129,7 @@ while true; do
         sed -r -i 's/(^key\s).*$/\1'"$server_key_file"'/' /etc/openvpn/server/server.conf
 
         # Activate ip forward
-        echo -e "\n====================\nIp forward configing \n====================\n"
+        echo -e "\n====================\nIp forward configure \n====================\n"
         sed -i 's/#\?\(net.ipv4.ip_forward=1\s*\).*$/\1/' /etc/sysctl.conf
         sysctl -p
         echo -e "\nDONE\n"
