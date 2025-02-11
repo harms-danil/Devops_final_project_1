@@ -1,0 +1,31 @@
+global:
+  smtp_from: harmsss@yandex.ru
+
+route:
+  group_by: ['alertname', 'instance', 'severity']
+  group_wait: 10s
+  group_interval: 5m
+  repeat_interval: 1h
+  receiver: 'web.hook and email'
+
+receivers:
+  - name: 'web.hook and email'
+    # webhook_configs:
+        # - send_resolved: true
+        #  - url: 'http://127.0.0.1:5001/'
+    email_configs:
+      - send_resolved: true
+        to: harmsss@yandex.ru
+        from: harmsss@yandex.ru
+        smarthost: smtp.yandex.ru:587
+        auth_username: "harmsss"
+        auth_identity: "harmsss"
+        auth_password: "..."
+
+inhibit_rules:
+  - source_match:
+      severity: 'critical'
+    target_match:
+      severity: 'warning'
+    equal: ['alertname', 'dev', 'instance']
+~
